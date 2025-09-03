@@ -40,6 +40,12 @@ EncoreAnalytics aborda esta problemática ofreciendo un modelo integral que perm
 
 ---
 
+## 💾 Diagrama MER (inicial)
+
+![Diagrama MER EncoreAnalytics](images_readme/diagrama.png)
+
+---
+
 ## 📊 Reportes y estadísticas
 
 - Conciertos por ciudad o venue.  
