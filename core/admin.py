@@ -1,10 +1,8 @@
 from django.contrib import admin
-from .models import City, Artist, Venue
-
-# Register your models here.
-from django.contrib import admin
 from .models import Artist, City, Venue
 
+
+# Register your models here.
 @admin.register(Artist)
 class ArtistAdmin(admin.ModelAdmin):
     list_display = ('name', 'country', 'debut_year', 'genre')
