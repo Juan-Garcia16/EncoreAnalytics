@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Venues{% endblock %}
+{% block content %}
+<h2>Venues</h2>
+<a href="{% url 'venue_add' %}" class="btn btn-primary mb-3">Agregar Venue</a>
+<table class="table table-striped">
+    <thead>
+        <tr><th>Nombre</th><th>Dirección</th><th>Capacidad</th><th>Ciudad</th></tr>
+    </thead>
+    <tbody>
+        {% for venue in venues %}
+        <tr>
+            <td>{{ venue.name }}</td>
+            <td>{{ venue.address }}</td>
+            <td>{{ venue.capacity }}</td>
+            <td>{{ venue.city }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No hay venues registrados</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Artistas{% endblock %}
+{% block content %}
+<h2>Artistas</h2>
+<a href="{% url 'artist_add' %}" class="btn btn-primary mb-3">Agregar Artista</a>
+<table class="table table-striped">
+    <thead>
+        <tr><th>Nombre</th><th>País</th><th>Año debut</th><th>Género</th></tr>
+    </thead>
+    <tbody>
+        {% for artist in artists %}
+        <tr>
+            <td>{{ artist.name }}</td>
+            <td>{{ artist.country }}</td>
+            <td>{{ artist.debut_year }}</td>
+            <td>{{ artist.genre }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No hay artistas registrados</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

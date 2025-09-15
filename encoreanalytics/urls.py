@@ -21,5 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('core.urls')), #home y modelos base
     path('fans/', include('fans.urls')),
-    path('conciertos/', include('conciertos.urls')),
+    path('concerts/', include('conciertos.urls')),
 ]

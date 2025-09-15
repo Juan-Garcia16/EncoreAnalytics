@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Fans{% endblock %}
+{% block content %}
+<h2>Fans</h2>
+<a href="{% url 'fan_add' %}" class="btn btn-primary mb-3">Agregar Fan</a>
+<table class="table table-striped">
+    <thead>
+        <tr><th>Nombre</th><th>Email</th><th>Ciudad</th></tr>
+    </thead>
+    <tbody>
+        {% for fan in fans %}
+        <tr>
+            <td>{{ fan.full_name }}</td>
+            <td>{{ fan.email }}</td>
+            <td>{{ fan.city }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">No hay fans registrados</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

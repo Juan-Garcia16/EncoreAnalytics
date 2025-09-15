@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Ciudades{% endblock %}
+{% block content %}
+<h2>Ciudades</h2>
+<a href="{% url 'city_add' %}" class="btn btn-primary mb-3">Agregar Ciudad</a>
+<table class="table table-striped">
+    <thead>
+        <tr><th>Nombre</th><th>País</></tr>
+    </thead>
+    <tbody>
+        {% for city in cities %}
+        <tr>
+            <td>{{ city.name }}</td>
+            <td>{{ city.country }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No hay ciudades registradas</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

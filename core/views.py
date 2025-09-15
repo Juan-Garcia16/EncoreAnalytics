@@ -5,7 +5,7 @@ from .models import Artist, City, Venue
 
 # Create your views here.
 def HomeView(request):
-    return render(request, 'home.html')
+    return render(request, 'base.html')
 
 # Artist views
 class ArtistListView(ListView):
