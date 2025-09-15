@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Conciertos{% endblock %}
+{% block content %}
+<h2>Conciertos</h2>
+<a href="{% url 'concert_add' %}" class="btn btn-primary mb-3">Agregar Concierto</a>
+<table class="table table-striped">
+    <thead>
+        <tr><th>Artista</th><th>Venue</th><th>Fecha</th><th>Estado</th></tr>
+    </thead>
+    <tbody>
+        {% for concert in concerts %}
+        <tr>
+            <td>{{ concert.artist.name }}</td>
+            <td>{{ concert.venue.name }}</td>
+            <td>{{ concert.start_datetime|date:"d/m/Y H:i" }}</td>
+            <td>{{ concert.get_status_display }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No hay conciertos</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
