@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Conciertos esperados{% endblock %}
+{% block content %}
+<h2>Conciertos Esperados</h2>
+<a href="{% url 'interest_add' %}" class="btn btn-primary mb-3">Agregar Interes</a>
+<table class="table table-striped">
+    <thead>
+        <tr><th>Fan</th><th>Concierto</th><th>Fecha de Creación</th></tr>
+    </thead>
+    <tbody>
+        {% for interest in interests %}
+        <tr>
+            <td>{{ interest.fan.full_name }}</td>
+            <td>{{ interest.concert }}</td>
+            <td>{{ interest.created_at }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">No hay fans registrados</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

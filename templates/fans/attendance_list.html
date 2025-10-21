@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Puntuaciones{% endblock %}
+{% block content %}
+<h2>Puntuaciones</h2>
+<a href="{% url 'attendance_add' %}" class="btn btn-primary mb-3">Agregar Puntuación</a>
+<table class="table table-striped">
+    <thead>
+        <tr><th>Nombre</th><th>Concierto</th><th>Puntuación</th></tr>
+    </thead>
+    <tbody>
+        {% for attendance in attendances %}
+        <tr>
+            <td>{{ attendance.fan.full_name }}</td>
+            <td>{{ attendance.concert }}</td>
+            <td>{{ attendance.rating }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">No hay puntuaciones registradas</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
