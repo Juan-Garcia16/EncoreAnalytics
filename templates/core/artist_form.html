@@ -1,11 +1,58 @@
 {% extends 'base.html' %}
 {% block title %}Nuevo Artista{% endblock %}
 {% block content %}
-<h2>Agregar Artista</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Guardar</button>
-</form>
-<a href="{% url 'artist_list' %}">Volver</a>
+
+<div class="flex justify-center py-10">
+  <div class="bg-[#192233] rounded-xl p-8 w-full max-w-md shadow-lg">
+    <h2 class="text-2xl font-bold text-white mb-6">Nuevo Artista</h2>
+
+    <form method="POST" class="space-y-4">
+      {% csrf_token %}
+      
+      <!-- Nombre del Artista -->
+      <div>
+        <label class="block text-sm font-medium text-[#92a4c9] mb-1" for="{{ form.name.id_for_label }}">
+          Nombre del Artista
+        </label>
+        {{ form.name }}
+      </div>
+
+      <!-- País -->
+      <div>
+        <label class="block text-sm font-medium text-[#92a4c9] mb-1" for="{{ form.country.id_for_label }}">
+          País
+        </label>
+        {{ form.country }}
+      </div>
+
+      <!-- Año de Debut -->
+      <div>
+        <label class="block text-sm font-medium text-[#92a4c9] mb-1" for="{{ form.debut_year.id_for_label }}">
+          Año de Debut
+        </label>
+        {{ form.debut_year }}
+      </div>
+
+      <!-- Género -->
+      <div>
+        <label class="block text-sm font-medium text-[#92a4c9] mb-1" for="{{ form.genre.id_for_label }}">
+          Género
+        </label>
+        {{ form.genre }}
+      </div>
+
+      <div class="flex justify-end gap-4 pt-4">
+        <a href="{% url 'artist_list' %}"
+           class="px-4 py-2 text-sm font-medium text-[#92a4c9] rounded-lg hover:bg-[#324467]">
+           Cancelar
+        </a>
+        <button type="submit"
+                class="px-4 py-2 text-sm font-bold text-white bg-primary rounded-lg hover:bg-primary/80">
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 {% endblock %}

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Registro - EncoreAnalytics</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#3B82F6",
+              "background-light": "#f6f6f8",
+              "background-dark": "#101622",
+            },
+            fontFamily: {
+              display: ["Manrope", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "0.75rem",
+              xl: "1rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-white"
+  >
+    <div
+      class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden"
+    >
+      <div class="flex w-full flex-col items-center p-8">
+        <div class="mb-8 text-center w-full">
+
+          <h1 class="text-4xl font-black tracking-tighter text-white mt-4">
+            Crea tu Cuenta
+          </h1>
+          <p class="text-gray-400 mt-2">
+            Únete a EncoreAnalytics y lleva tu música al siguiente nivel.
+          </p>
+        </div>
+
+        <form method="POST">
+  {% csrf_token %}
+  <div class="w-full space-y-6">
+    <!-- Nombre completo -->
+    <label class="flex flex-col">
+      <p class="pb-2 text-base font-medium leading-normal text-white">
+        Nombre completo
+      </p>
+      {{ pform.full_name }}
+    </label>
+
+    <!-- Correo electrónico -->
+    <label class="flex flex-col">
+      <p class="pb-2 text-base font-medium leading-normal text-white">
+        Correo electrónico
+      </p>
+      {{ uform.email }}
+    </label>
+
+    <!-- Contraseña -->
+    <label class="flex flex-col">
+      <p class="pb-2 text-base font-medium leading-normal text-white">
+        Contraseña
+      </p>
+      {{ uform.password1 }}
+    </label>
+
+    <!-- Confirmar contraseña -->
+    <label class="flex flex-col">
+      <p class="pb-2 text-base font-medium leading-normal text-white">
+        Confirmar contraseña
+      </p>
+      {{ uform.password2 }}
+    </label>
+
+    <!-- Ciudad -->
+    <label class="flex flex-col">
+      <p class="pb-2 text-base font-medium leading-normal text-white">
+        Ciudad
+      </p>
+      {{ pform.city }}
+    </label>
+
+    <!-- Fecha de nacimiento -->
+    <label class="flex flex-col">
+      <p class="pb-2 text-base font-medium leading-normal text-white">
+        Fecha de nacimiento
+      </p>
+      {{ pform.birthdate }}
+    </label>
+  </div>
+
+  <!-- Botón -->
+  <div class="w-full mt-8">
+    <button
+      class="flex h-14 w-full items-center justify-center rounded-lg bg-primary px-6 text-base font-bold text-white shadow-sm transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-dark"
+      type="submit"
+    >
+      Registrarse
+    </button>
+  </div>
+</form>
+
+
+        <p class="mt-8 text-center text-sm text-gray-400">
+          ¿Ya tienes una cuenta?
+          <a class="font-semibold text-primary hover:underline" href="#"
+            >Inicia sesión</a
+          >
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

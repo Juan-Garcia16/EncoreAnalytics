@@ -1,0 +1,179 @@
+{% extends "base.html" %} 
+{% block content %}
+<div class="flex-1 overflow-y-auto p-10">
+  <div class="layout-content-container flex flex-col flex-1">
+    <div class="@container mb-8">
+      <div class="@[480px]:p-4">
+        <div
+          class="flex min-h-[500px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-center justify-center p-4 mt-0"
+          data-alt="Siluetas de una multitud en un concierto con luces de escenario de colores"
+          style="
+            background-image: linear-gradient(
+                rgba(16, 22, 34, 0.6) 0%,
+                rgba(16, 22, 34, 0.9) 100%
+              ),
+              url('https://lh3.googleusercontent.com/aida-public/AB6AXuDosclbuy9NfxPAezsl8CrPYsQ5dOyTAg_Pl_tu5MIPXTfjHuPeiEq_8fjR8EeMaQiHxqsUq1BenMh24CjcQCQ_Fx6Hf_B6FcCOVLkNJYcvxwMItcwPDwo34-nzaTzq0voevPnrv7zDkQRngMEryWCwJZGmWQoSgHINcFJA_iv5-3Pf_HXhgv8qgVhT96UDG0NbTmDm5IzBQHxIq6BGOujl0mBLiUodL_z4CbMiPJNLM-nte0MghFTQW5687R8hQhI3Uv9zxffh4f0');
+          "
+        >
+          <div class="flex flex-col gap-2 text-center">
+            <h1
+              class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
+            >
+              Analiza, mide y entiende el impacto de la música en vivo
+            </h1>
+            <h2
+              class="text-white/80 text-base font-normal leading-normal @[480px]:text-lg @[480px]:font-normal @[480px]:leading-normal"
+            >
+              Tu plataforma todo en uno para la gestión y análisis musical.
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6">
+      <div
+        class="relative flex flex-col justify-end gap-3 p-6 bg-[#181F2D] rounded-xl hover:bg-[#232f48] transition-colors cursor-pointer min-h-[180px] overflow-hidden"
+      >
+        <div
+          class="absolute inset-0 bg-cover bg-center opacity-20"
+          style="
+            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlSCV6VHKC06uNGsS2wMfB608mztbkvOfCqAa21wOt2z_bjpCP1TPjRyi9i7SWtVeP937Gr2qaXWB6GcE3G4sBpSxd5Kh_V_gZTOt-Iy3yRjwuKeuYxjGbLobayc55kXPFfOlKgA65QSQ4wUXy0RYuMMt5z4nISc4yK47Z-J0hgyV1Q6fWJSHFTAkxGvWkHb-6NG1fDNONBRDkGaHrIu9BQ2yZfObbOv2HXg_a2ZLSR_zuK6KSp8hqW2Mn0v7EcXThXHw9Gk6_5ig');
+          "
+        ></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"
+        ></div>
+        <div class="relative z-10 flex items-center gap-3">
+          <div class="text-primary">
+            <span class="material-symbols-outlined" style="font-size: 36px"
+              >mic</span
+            >
+          </div>
+          <div>
+            <p class="text-white text-lg font-bold leading-normal">Artistas</p>
+          </div>
+        </div>
+        <p
+          class="text-[#92a4c9] text-sm font-normal leading-normal relative z-10"
+        >
+          Gestiona y analiza el perfil de tus artistas.
+        </p>
+      </div>
+      <div
+        class="relative flex flex-col justify-end gap-3 p-6 bg-[#181F2D] rounded-xl hover:bg-[#232f48] transition-colors cursor-pointer min-h-[180px] overflow-hidden"
+      >
+        <div
+          class="absolute inset-0 bg-cover bg-center opacity-20"
+          style="
+            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlSCV6VHKC06uNGsS2wMfB608mztbkvOfCqAa21wOt2z_bjpCP1TPjRyi9i7SWtVeP937Gr2qaXWB6GcE3G4sBpSxd5Kh_V_gZTOt-Iy3yRjwuKeuYxjGbLobayc55kXPFfOlKgA65QSQ4wUXy0RYuMMt5z4nISc4yK47Z-J0hgyV1Q6fWJSHFTAkxGvWkHb-6NG1fDNONBRDkGaHrIu9BQ2yZfObbOv2HXg_a2ZLSR_zuK6KSp8hqW2Mn0v7EcXThXHw9Gk6_5ig');
+          "
+        ></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"
+        ></div>
+        <div class="relative z-10 flex items-center gap-3">
+          <div class="text-primary">
+            <span class="material-symbols-outlined" style="font-size: 36px"
+              >calendar_today</span
+            >
+          </div>
+          <div>
+            <p class="text-white text-lg font-bold leading-normal">
+              Conciertos
+            </p>
+          </div>
+        </div>
+        <p
+          class="text-[#92a4c9] text-sm font-normal leading-normal relative z-10"
+        >
+          Planifica y supervisa eventos individuales.
+        </p>
+      </div>
+      <div
+        class="relative flex flex-col justify-end gap-3 p-6 bg-[#181F2D] rounded-xl hover:bg-[#232f48] transition-colors cursor-pointer min-h-[180px] overflow-hidden"
+      >
+        <div
+          class="absolute inset-0 bg-cover bg-center opacity-20"
+          style="
+            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlSCV6VHKC06uNGsS2wMfB608mztbkvOfCqAa21wOt2z_bjpCP1TPjRyi9i7SWtVeP937Gr2qaXWB6GcE3G4sBpSxd5Kh_V_gZTOt-Iy3yRjwuKeuYxjGbLobayc55kXPFfOlKgA65QSQ4wUXy0RYuMMt5z4nISc4yK47Z-J0hgyV1Q6fWJSHFTAkxGvWkHb-6NG1fDNONBRDkGaHrIu9BQ2yZfObbOv2HXg_a2ZLSR_zuK6KSp8hqW2Mn0v7EcXThXHw9Gk6_5ig');
+          "
+        ></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"
+        ></div>
+        <div class="relative z-10 flex items-center gap-3">
+          <div class="text-primary">
+            <span class="material-symbols-outlined" style="font-size: 36px"
+              >map</span
+            >
+          </div>
+          <div>
+            <p class="text-white text-lg font-bold leading-normal">Giras</p>
+          </div>
+        </div>
+        <p
+          class="text-[#92a4c9] text-sm font-normal leading-normal relative z-10"
+        >
+          Organiza y mide el rendimiento de giras completas.
+        </p>
+      </div>
+      <div
+        class="relative flex flex-col justify-end gap-3 p-6 bg-[#181F2D] rounded-xl hover:bg-[#232f48] transition-colors cursor-pointer min-h-[180px] overflow-hidden"
+      >
+        <div
+          class="absolute inset-0 bg-cover bg-center opacity-20"
+          style="
+            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlSCV6VHKC06uNGsS2wMfB608mztbkvOfCqAa21wOt2z_bjpCP1TPjRyi9i7SWtVeP937Gr2qaXWB6GcE3G4sBpSxd5Kh_V_gZTOt-Iy3yRjwuKeuYxjGbLobayc55kXPFfOlKgA65QSQ4wUXy0RYuMMt5z4nISc4yK47Z-J0hgyV1Q6fWJSHFTAkxGvWkHb-6NG1fDNONBRDkGaHrIu9BQ2yZfObbOv2HXg_a2ZLSR_zuK6KSp8hqW2Mn0v7EcXThXHw9Gk6_5ig');
+          "
+        ></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"
+        ></div>
+        <div class="relative z-10 flex items-center gap-3">
+          <div class="text-primary">
+            <span class="material-symbols-outlined" style="font-size: 36px"
+              >groups</span
+            >
+          </div>
+          <div>
+            <p class="text-white text-lg font-bold leading-normal">Fans</p>
+          </div>
+        </div>
+        <p
+          class="text-[#92a4c9] text-sm font-normal leading-normal relative z-10"
+        >
+          Entiende a tu audiencia y su comportamiento.
+        </p>
+      </div>
+      <div
+        class="relative flex flex-col justify-end gap-3 p-6 bg-[#181F2D] rounded-xl hover:bg-[#232f48] transition-colors cursor-pointer col-span-1 sm:col-span-2 md:col-span-1 lg:col-span-2 min-h-[180px] overflow-hidden"
+      >
+        <div
+          class="absolute inset-0 bg-cover bg-center opacity-20"
+          style="
+            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlSCV6VHKC06uNGsS2wMfB608mztbkvOfCqAa21wOt2z_bjpCP1TPjRyi9i7SWtVeP937Gr2qaXWB6GcE3G4sBpSxd5Kh_V_gZTOt-Iy3yRjwuKeuYxjGbLobayc55kXPFfOlKgA65QSQ4wUXy0RYuMMt5z4nISc4yK47Z-J0hgyV1Q6fWJSHFTAkxGvWkHb-6NG1fDNONBRDkGaHrIu9BQ2yZfObbOv2HXg_a2ZLSR_zuK6KSp8hqW2Mn0v7EcXThXHw9Gk6_5ig');
+          "
+        ></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"
+        ></div>
+        <div class="relative z-10 flex items-center gap-3">
+          <div class="text-primary">
+            <span class="material-symbols-outlined" style="font-size: 36px"
+              >bar_chart</span
+            >
+          </div>
+          <div>
+            <p class="text-white text-lg font-bold leading-normal">Reportes</p>
+          </div>
+        </div>
+        <p
+          class="text-[#92a4c9] text-sm font-normal leading-normal relative z-10"
+        >
+          Genera informes detallados y visualizaciones.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

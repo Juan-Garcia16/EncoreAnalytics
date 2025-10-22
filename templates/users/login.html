@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Iniciar Sesión - EncoreAnalytics</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#3A8DFF",
+              "background-light": "#f6f6f8",
+              "background-dark": "#1A1A1A",
+              "form-background-dark": "#2C2C2C",
+            },
+            fontFamily: {
+              display: ["Manrope", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "0.75rem",
+              xl: "1rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .form-input {
+        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: #3a8dff;
+        box-shadow: 0 0 0 3px rgba(58, 141, 255, 0.3);
+      }
+    </style>
+  </head>
+  <body class="bg-background-light dark:bg-background-dark font-display">
+    <div
+      class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden"
+      style="font-family: Manrope, 'Noto Sans', sans-serif"
+    >
+      <div class="layout-container flex h-full grow flex-col">
+        <div class="px-4 flex flex-1 justify-center items-center py-5">
+          <div
+            class="layout-content-container flex flex-col max-w-[480px] w-full flex-1 bg-background-light dark:bg-form-background-dark p-8 md:p-10 rounded-xl shadow-lg"
+          >
+            <div class="flex flex-col items-center justify-center mb-6">
+              <div
+                class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4"
+              >
+                <span class="material-symbols-outlined text-white text-4xl">
+                  bar_chart
+                </span>
+              </div>
+              <div class="text-center">
+                <p
+                  class="text-white text-3xl font-bold leading-tight tracking-tight"
+                >
+                  Iniciar Sesión en EncoreAnalytics
+                </p>
+                <p
+                  class="text-gray-400 text-base font-normal leading-normal mt-2"
+                >
+                  Analiza tu música. Conecta con tus fans.
+                </p>
+              </div>
+            </div>
+            <div class="flex flex-col gap-4">
+              <label class="flex flex-col">
+                <p class="text-white text-sm font-medium leading-normal pb-2">
+                  Correo Electrónico
+                </p>
+                <input
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border border-gray-700 bg-[#1f1f1f] focus:border-primary h-12 placeholder:text-gray-500 p-3 text-base font-normal leading-normal"
+                  placeholder="tu@email.com"
+                  type="email"
+                  value=""
+                />
+              </label>
+              <label class="flex flex-col">
+                <div class="flex justify-between items-center pb-2">
+                  <p class="text-white text-sm font-medium leading-normal">
+                    Contraseña
+                  </p>
+                  <a
+                    class="text-primary hover:underline text-sm font-medium"
+                    href="#"
+                    >¿Olvidaste tu contraseña?</a
+                  >
+                </div>
+                <div class="flex w-full flex-1 items-stretch rounded-lg">
+                  <input
+                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border border-gray-700 bg-[#1f1f1f] focus:border-primary h-12 placeholder:text-gray-500 p-3 rounded-r-none border-r-0 text-base font-normal leading-normal"
+                    id="password-input"
+                    placeholder="••••••••"
+                    type="password"
+                    value=""
+                  />
+                  <button
+                    class="text-gray-400 flex border border-gray-700 bg-[#1f1f1f] items-center justify-center px-3 rounded-r-lg border-l-0 hover:text-white"
+                    data-icon="Eye"
+                    data-size="24px"
+                    data-weight="regular"
+                    id="toggle-password"
+                  >
+                    <span class="material-symbols-outlined" id="eye-icon"
+                      >visibility</span
+                    >
+                  </button>
+                </div>
+              </label>
+              <button
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 mt-4 flex-1 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-opacity-90 transition-opacity"
+              >
+                <span class="truncate">Iniciar Sesión</span>
+              </button>
+            </div>
+            <div class="text-center mt-6">
+              <p class="text-gray-400 text-sm">
+                ¿No tienes una cuenta?
+                <a class="font-medium text-primary hover:underline" href="#"
+                  >Regístrate</a
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const togglePassword = document.getElementById("toggle-password");
+      const passwordInput = document.getElementById("password-input");
+      const eyeIcon = document.getElementById("eye-icon");
+
+      togglePassword.addEventListener("click", function (e) {
+        // prevent form submission
+        e.preventDefault();
+
+        // toggle the type attribute
+        const type =
+          passwordInput.getAttribute("type") === "password"
+            ? "text"
+            : "password";
+        passwordInput.setAttribute("type", type);
+
+        // toggle the eye icon
+        eyeIcon.textContent =
+          type === "password" ? "visibility" : "visibility_off";
+      });
+    </script>
+  </body>
+</html>
