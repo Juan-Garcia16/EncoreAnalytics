@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from .models import Artist, City, Venue
 from .forms import ArtistForm
@@ -39,6 +39,19 @@ class ArtistCreateView(CreateView):
         # lista de países para el datalist en el formulario
         context['countries'] = get_countries()
         # lista de géneros para el datalist en el formulario
+        context['genres'] = get_genres()
+        return context
+
+
+class ArtistUpdateView(UpdateView):
+    model = Artist
+    form_class = ArtistForm
+    template_name = 'core/artist_form.html'
+    success_url = reverse_lazy('artist_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['countries'] = get_countries()
         context['genres'] = get_genres()
         return context
     

@@ -4,7 +4,11 @@
 
 <div class="flex justify-center items-center py-20">
   <div class="bg-[#192233] rounded-xl p-8 w-full max-w-md shadow-lg">
+    {% if form.instance.pk %}
+      <h2 class="text-2xl font-bold text-white mb-6">Editar Artista</h2>
+    {% else %}
     <h2 class="text-2xl font-bold text-white mb-6">Nuevo Artista</h2>
+    {% endif %}
 
     <form method="POST" class="space-y-4">
       {% csrf_token %}

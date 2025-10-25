@@ -87,11 +87,11 @@
             >
           </td>
           <td class="px-6 py-4 text-right">
-            <button
+            <a href="{% url 'artist_edit' artist.pk %}"
               class="text-primary hover:text-white text-sm font-bold leading-normal tracking-[0.015em]"
             >
               Editar
-            </button>
+            </a>
           </td>
         </tr>
         {% empty %}
