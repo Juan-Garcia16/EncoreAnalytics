@@ -8,6 +8,8 @@
 
     <form method="POST" class="space-y-4">
       {% csrf_token %}
+      <!-- Errores generales -->
+      {{ form.non_field_errors }}
       
       <!-- Nombre del Artista -->
       <div>
@@ -15,6 +17,9 @@
           Nombre del Artista
         </label>
         {{ form.name }}
+        {% for error in form.name.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+        {% endfor %}
       </div>
 
       <!-- País -->
@@ -23,6 +28,14 @@
           País
         </label>
         {{ form.country }}
+        {% for error in form.country.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+        {% endfor %}
+        <datalist id="countries-list">
+          {% for c in countries %}
+            <option value="{{ c }}"></option>
+          {% endfor %}
+        </datalist>
       </div>
 
       <!-- Año de Debut -->
@@ -31,6 +44,9 @@
           Año de Debut
         </label>
         {{ form.debut_year }}
+        {% for error in form.debut_year.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+        {% endfor %}
       </div>
 
       <!-- Género -->
@@ -39,6 +55,14 @@
           Género
         </label>
         {{ form.genre }}
+        {% for error in form.genre.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+        {% endfor %}
+        <datalist id="genres-list">
+          {% for g in genres %}
+            <option value="{{ g }}"></option>
+          {% endfor %}
+        </datalist>
       </div>
 
       <div class="flex justify-center gap-4 pt-4">

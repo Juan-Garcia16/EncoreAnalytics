@@ -3,6 +3,8 @@ from django.views.generic import ListView, CreateView
 from django.urls import reverse_lazy
 from .models import Artist, City, Venue
 from .forms import ArtistForm
+from .countries import get_countries
+from .genres import get_genres
 
 # Create your views here.
 def HomeView(request):
@@ -20,6 +22,14 @@ class ArtistCreateView(CreateView):
     form_class = ArtistForm
     template_name = 'core/artist_form.html'
     success_url = reverse_lazy('artist_list')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # lista de países para el datalist en el formulario
+        context['countries'] = get_countries()
+        # lista de géneros para el datalist en el formulario
+        context['genres'] = get_genres()
+        return context
     
 # City views
 class CityListView(ListView):
