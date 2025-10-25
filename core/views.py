@@ -5,6 +5,7 @@ from .models import Artist, City, Venue
 from .forms import ArtistForm
 from .countries import get_countries
 from .genres import get_genres
+from django.db.models import Q
 
 # Create your views here.
 def HomeView(request):
@@ -16,6 +17,16 @@ class ArtistListView(ListView):
     template_name = 'core/artist_list.html'
     context_object_name = 'artists'
     queryset = Artist.objects.all().order_by('name')
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        q = self.request.GET.get('query_artists', '').strip()
+        if q:
+            # Buscar por nombre, país o género (case-insensitive)
+            qs = qs.filter(
+                Q(name__icontains=q) | Q(country__icontains=q) | Q(genre__icontains=q)
+            ).order_by('name')
+        return qs
 
 class ArtistCreateView(CreateView):
     model = Artist

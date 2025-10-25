@@ -12,11 +12,34 @@
         Gestiona y organiza los artistas en tu catálogo.
       </p>
     </div>
+    <div class="flex gap-2">
+        <div class="flex items-center gap-8 min-w-[330px] w-full">
+          <form method="get" class="w-full">
+            <label class="flex flex-col min-w-40 !h-10 w-full">
+              <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                <div
+                  class="text-[#92a4c9] flex border-none bg-[#232f48] items-center justify-center pl-4 rounded-l-lg border-r-0"
+                >
+                  <span class="material-symbols-outlined">search</span>
+                </div>
+                <input
+                  name="query_artists"
+                  value="{{ request.GET.query_artists|default_if_none:'' }}"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-[#232f48] focus:border-none h-full placeholder:text-[#92a4c9] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                  placeholder="Buscar Artistas (nombre, país, género)..."
+                />
+              </div>
+            </label>
+          </form>
+        </div>
+    {% if request.user.is_staff %}
     <button
       class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em]"
     >
       <a href="{% url 'artist_add' %}" class="truncate">Agregar Artista</a>
     </button>
+    {% endif %}
+    </div>
   </div>
   <div
     class="flex overflow-hidden rounded-xl border border-[#324467] bg-[#111722]"
@@ -84,7 +107,7 @@
       </tbody>
     </table>
   </div>
-  <div class="flex items-center justify-center p-4 mt-4">
+  <!-- <div class="flex items-center justify-center p-4 mt-4">
     <a
       class="flex size-10 items-center justify-center text-[#92a4c9] hover:text-white"
       href="#"
@@ -132,5 +155,5 @@
       <span class="material-symbols-outlined">chevron_right</span>
     </a>
   </div>
-</div>
+</div> -->
 {% endblock %}
