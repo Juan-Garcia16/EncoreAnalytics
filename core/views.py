@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, CreateView
 from django.urls import reverse_lazy
 from .models import Artist, City, Venue
+from .forms import ArtistForm
 
 # Create your views here.
 def HomeView(request):
@@ -16,8 +17,8 @@ class ArtistListView(ListView):
 
 class ArtistCreateView(CreateView):
     model = Artist
+    form_class = ArtistForm
     template_name = 'core/artist_form.html'
-    fields = ['name', 'country', 'debut_year', 'genre']
     success_url = reverse_lazy('artist_list')
     
 # City views
