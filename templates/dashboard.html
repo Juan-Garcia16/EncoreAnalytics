@@ -1,75 +1,102 @@
 {% extends "base.html" %} 
 {% block content %}
-<div class="flex-1 overflow-y-auto p-10">
-  <div class="layout-content-container flex flex-col flex-1">
-    <div class="@container mb-8">
-      <div class="@[480px]:p-4">
-        <div
-          class="flex min-h-[500px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-center justify-center p-4 mt-0"
-          data-alt="Siluetas de una multitud en un concierto con luces de escenario de colores"
-          style="
-            background-image: linear-gradient(
-                rgba(16, 22, 34, 0.6) 0%,
-                rgba(16, 22, 34, 0.9) 100%
-              ),
-              url('https://lh3.googleusercontent.com/aida-public/AB6AXuDosclbuy9NfxPAezsl8CrPYsQ5dOyTAg_Pl_tu5MIPXTfjHuPeiEq_8fjR8EeMaQiHxqsUq1BenMh24CjcQCQ_Fx6Hf_B6FcCOVLkNJYcvxwMItcwPDwo34-nzaTzq0voevPnrv7zDkQRngMEryWCwJZGmWQoSgHINcFJA_iv5-3Pf_HXhgv8qgVhT96UDG0NbTmDm5IzBQHxIq6BGOujl0mBLiUodL_z4CbMiPJNLM-nte0MghFTQW5687R8hQhI3Uv9zxffh4f0');
-          "
-        >
-          <div class="flex flex-col gap-2 text-center">
-            <h1
-              class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
-            >
-              Analiza, mide y entiende el impacto de la música en vivo
-            </h1>
-            <h2
-              class="text-white/80 text-base font-normal leading-normal @[480px]:text-lg @[480px]:font-normal @[480px]:leading-normal"
-            >
-              Tu plataforma todo en uno para la gestión y análisis musical.
-            </h2>
-          </div>
-        </div>
+<div class="flex-1 overflow-y-auto overflow-x-hidden p-10">
+  <!-- full-bleed hero: placed directly under the outer padding wrapper so it can touch the aside and header -->
+  <div
+    class="relative w-full max-w-full overflow-hidden flex min-h-[500px] flex-col gap-6 @[480px]:gap-8 @[480px]:rounded-xl items-center justify-center px-10 py-4 mb-8 md:static md:hidden"
+    data-alt="Siluetas de una multitud en un concierto con luces de escenario de colores"
+  >
+    <!-- background image layer (visual only) -->
+    <div
+      class="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
+      style="background-image: url('https://www.elnacional.cat/uploads/s1/52/29/26/77/twenty-one-pilots-christian-bertrand-004.jpeg'); background-position: center;"
+      aria-hidden="true"
+    ></div>
+    <!-- gradient overlay: darken bottom and blend smoothly into main (black) -->
+    <div class="absolute left-0 right-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-black z-5 pointer-events-none" aria-hidden="true"></div>
+    <!-- optional subtle top overlay for text contrast -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-5 pointer-events-none" aria-hidden="true"></div>
+
+    <div class="relative z-10 flex flex-col gap-2 text-center">
+      <h1
+        class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
+      >
+        Analiza, mide y entiende el impacto de la música en vivo
+      </h1>
+      <h2
+        class="text-white text-base font-normal leading-normal @[480px]:text-lg @[480px]:font-normal @[480px]:leading-normal"
+      >
+        Tu plataforma todo en uno para la gestión y análisis musical.
+      </h2>
+    </div>
+  </div>
+
+  <!-- spacer to preserve document flow when hero is positioned over the top on md+ -->
+  <div class="hidden md:block md:h-[500px]"></div>
+
+  <!-- absolutely positioned hero for large screens: placed with left equal to aside width and full width to the right edge -->
+  <div class="hidden md:block">
+    <div class="absolute top-16 left-64 right-0 overflow-hidden z-0">
+      <div
+        class="h-[500px] w-full bg-cover bg-center"
+        style="background-image: url('https://www.elnacional.cat/uploads/s1/52/29/26/77/twenty-one-pilots-christian-bertrand-004.jpeg');"
+
+        
+        aria-hidden="true"
+      ></div>
+      <div class="absolute left-0 right-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-black pointer-events-none" aria-hidden="true"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" aria-hidden="true"></div>
+      <!-- text overlay for the absolute hero -->
+      <div class="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-10">
+        <h1 class="text-white text-4xl font-black leading-tight tracking-[-0.033em]">Analiza, mide y entiende el impacto de la música en vivo</h1>
+        <h2 class="text-white text-base font-normal mt-2">Tu plataforma todo en uno para la gestión y análisis musical.</h2>
       </div>
     </div>
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6">
+  </div>
+
+  <div class="layout-content-container flex flex-col flex-1">
+
+    
+  <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6">
       <div
-        class="relative flex flex-col justify-end gap-3 p-6 bg-[#181F2D] rounded-xl hover:bg-[#232f48] transition-colors cursor-pointer min-h-[180px] overflow-hidden"
+        class="relative flex flex-col justify-end gap-3 p-6 bg-card rounded-xl shadow-subtle hover:bg-card/90 cursor-pointer min-h-[220px] overflow-hidden transform transition duration-300 ease-out hover:scale-105 hover:-translate-y-1 hover:shadow-card-glow hover:ring-1 hover:ring-white/10"
       >
+        <!-- background image (visual only) -->
         <div
-          class="absolute inset-0 bg-cover bg-center opacity-20"
-          style="
-            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlSCV6VHKC06uNGsS2wMfB608mztbkvOfCqAa21wOt2z_bjpCP1TPjRyi9i7SWtVeP937Gr2qaXWB6GcE3G4sBpSxd5Kh_V_gZTOt-Iy3yRjwuKeuYxjGbLobayc55kXPFfOlKgA65QSQ4wUXy0RYuMMt5z4nISc4yK47Z-J0hgyV1Q6fWJSHFTAkxGvWkHb-6NG1fDNONBRDkGaHrIu9BQ2yZfObbOv2HXg_a2ZLSR_zuK6KSp8hqW2Mn0v7EcXThXHw9Gk6_5ig');
-          "
+          class="absolute inset-0 bg-cover bg-center opacity-100"
+          style="background-image: url('https://estaticos.elcolombiano.com/binrepository/847x565/52c0/780d565/none/11101/RNAB/gaa82oqxgaa2fqt_46961688_20250116123549.jpg');"
+          aria-hidden="true"
         ></div>
-        <div
-          class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"
-        ></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/100 to-transparent" aria-hidden="true"></div>
+
+        <!-- clickable layer: absolutely positioned anchor that doesn't affect layout -->
+        <a href="{% url 'artist_list' %}" class="absolute inset-0 z-0" aria-label="Artistas"></a>
+
         <div class="relative z-10 flex items-center gap-3">
           <div class="text-primary">
-            <span class="material-symbols-outlined" style="font-size: 36px"
-              >mic</span
-            >
+            <span class="material-symbols-outlined" style="font-size: 36px">mic</span>
           </div>
           <div>
             <p class="text-white text-lg font-bold leading-normal">Artistas</p>
           </div>
         </div>
-        <p
-          class="text-[#92a4c9] text-sm font-normal leading-normal relative z-10"
-        >
+        <p class="text-[#92a4c9] text-sm font-normal leading-normal relative z-10">
           Gestiona y analiza el perfil de tus artistas.
         </p>
       </div>
+
+
       <div
-        class="relative flex flex-col justify-end gap-3 p-6 bg-[#181F2D] rounded-xl hover:bg-[#232f48] transition-colors cursor-pointer min-h-[180px] overflow-hidden"
+        class="relative flex flex-col justify-end gap-3 p-6 bg-card rounded-xl shadow-subtle hover:bg-card/90 cursor-pointer min-h-[220px] overflow-hidden transform transition duration-300 ease-out hover:scale-105 hover:-translate-y-1 hover:shadow-card-glow hover:ring-1 hover:ring-white/10"
       >
         <div
-          class="absolute inset-0 bg-cover bg-center opacity-20"
+          class="absolute inset-0 bg-cover bg-center"
           style="
-            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlSCV6VHKC06uNGsS2wMfB608mztbkvOfCqAa21wOt2z_bjpCP1TPjRyi9i7SWtVeP937Gr2qaXWB6GcE3G4sBpSxd5Kh_V_gZTOt-Iy3yRjwuKeuYxjGbLobayc55kXPFfOlKgA65QSQ4wUXy0RYuMMt5z4nISc4yK47Z-J0hgyV1Q6fWJSHFTAkxGvWkHb-6NG1fDNONBRDkGaHrIu9BQ2yZfObbOv2HXg_a2ZLSR_zuK6KSp8hqW2Mn0v7EcXThXHw9Gk6_5ig');
+            background-image: url('https://scontent.feoh1-1.fna.fbcdn.net/v/t39.30808-6/492205850_1233006484852534_1126913384648932790_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=f727a1&_nc_eui2=AeGqIZtcakjEeDp_sDhnE8Yx3b17HIbeBG3dvXscht4EbfoFUUpi5n4--y6XKFL_HV7ilbP9LsImVKGv-iKOyNv4&_nc_ohc=ULlj8Ae0ZaYQ7kNvwFI2p6y&_nc_oc=AdlBuR29PW8gEc98DXZzuMSdmAdQGqdrge_PPFJtc54hBSjJvwsYb0ZBa8DeKYvX8Tg&_nc_zt=23&_nc_ht=scontent.feoh1-1.fna&_nc_gid=7RXiK3M9UhBS5Ah6AB-VCw&oh=00_Afdq_VbNrzS_2F6fAVapLSZ5-VIb8DM8Rro9lPp9otKhpw&oe=69035645');
           "
         ></div>
         <div
-          class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"
+          class="absolute inset-0 bg-gradient-to-t from-black/100 to-transparent"
         ></div>
         <div class="relative z-10 flex items-center gap-3">
           <div class="text-primary">
@@ -90,16 +117,16 @@
         </p>
       </div>
       <div
-        class="relative flex flex-col justify-end gap-3 p-6 bg-[#181F2D] rounded-xl hover:bg-[#232f48] transition-colors cursor-pointer min-h-[180px] overflow-hidden"
+        class="relative flex flex-col justify-end gap-3 p-6 bg-card rounded-xl shadow-subtle hover:bg-card/90 cursor-pointer min-h-[220px] overflow-hidden transform transition duration-300 ease-out hover:scale-105 hover:-translate-y-1 hover:shadow-card-glow hover:ring-1 hover:ring-white/10"
       >
         <div
-          class="absolute inset-0 bg-cover bg-center opacity-20"
+          class="absolute inset-0 bg-cover bg-center"
           style="
-            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlSCV6VHKC06uNGsS2wMfB608mztbkvOfCqAa21wOt2z_bjpCP1TPjRyi9i7SWtVeP937Gr2qaXWB6GcE3G4sBpSxd5Kh_V_gZTOt-Iy3yRjwuKeuYxjGbLobayc55kXPFfOlKgA65QSQ4wUXy0RYuMMt5z4nISc4yK47Z-J0hgyV1Q6fWJSHFTAkxGvWkHb-6NG1fDNONBRDkGaHrIu9BQ2yZfObbOv2HXg_a2ZLSR_zuK6KSp8hqW2Mn0v7EcXThXHw9Gk6_5ig');
+            background-image: url('https://wallpapers.com/images/hd/linkin-park-4k-69d39qpgx1a22trr.jpg');
           "
         ></div>
         <div
-          class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"
+          class="absolute inset-0 bg-gradient-to-t from-black/100 to-transparent"
         ></div>
         <div class="relative z-10 flex items-center gap-3">
           <div class="text-primary">
@@ -114,20 +141,20 @@
         <p
           class="text-[#92a4c9] text-sm font-normal leading-normal relative z-10"
         >
-          Organiza y mide el rendimiento de giras completas.
+          Organiza y mide el rendimiento de giras.
         </p>
       </div>
       <div
-        class="relative flex flex-col justify-end gap-3 p-6 bg-[#181F2D] rounded-xl hover:bg-[#232f48] transition-colors cursor-pointer min-h-[180px] overflow-hidden"
+        class="relative flex flex-col justify-end gap-3 p-6 bg-card rounded-xl shadow-subtle hover:bg-card/90 cursor-pointer min-h-[220px] overflow-hidden transform transition duration-300 ease-out hover:scale-105 hover:-translate-y-1 hover:shadow-card-glow hover:ring-1 hover:ring-white/10"
       >
         <div
-          class="absolute inset-0 bg-cover bg-center opacity-20"
+          class="absolute inset-0 bg-cover bg-center"
           style="
-            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlSCV6VHKC06uNGsS2wMfB608mztbkvOfCqAa21wOt2z_bjpCP1TPjRyi9i7SWtVeP937Gr2qaXWB6GcE3G4sBpSxd5Kh_V_gZTOt-Iy3yRjwuKeuYxjGbLobayc55kXPFfOlKgA65QSQ4wUXy0RYuMMt5z4nISc4yK47Z-J0hgyV1Q6fWJSHFTAkxGvWkHb-6NG1fDNONBRDkGaHrIu9BQ2yZfObbOv2HXg_a2ZLSR_zuK6KSp8hqW2Mn0v7EcXThXHw9Gk6_5ig');
+            background-image: url('https://variety.com/wp-content/uploads/2019/12/12.05.2019-billie-eilish-apple-music-awards-33-e1575557057131.jpg');
           "
         ></div>
         <div
-          class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"
+          class="absolute inset-0 bg-gradient-to-t from-black/100 to-transparent"
         ></div>
         <div class="relative z-10 flex items-center gap-3">
           <div class="text-primary">
@@ -146,16 +173,16 @@
         </p>
       </div>
       <div
-        class="relative flex flex-col justify-end gap-3 p-6 bg-[#181F2D] rounded-xl hover:bg-[#232f48] transition-colors cursor-pointer col-span-1 sm:col-span-2 md:col-span-1 lg:col-span-2 min-h-[180px] overflow-hidden"
+        class="relative flex flex-col justify-end gap-3 p-6 bg-card rounded-xl shadow-subtle hover:bg-card/90 cursor-pointer col-span-1 sm:col-span-2 md:col-span-1 lg:col-span-2 min-h-[220px] overflow-hidden transform transition duration-300 ease-out hover:scale-105 hover:-translate-y-1 hover:shadow-card-glow hover:ring-1 hover:ring-white/10"
       >
         <div
-          class="absolute inset-0 bg-cover bg-center opacity-20"
+          class="absolute inset-0 bg-cover bg-center"
           style="
-            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlSCV6VHKC06uNGsS2wMfB608mztbkvOfCqAa21wOt2z_bjpCP1TPjRyi9i7SWtVeP937Gr2qaXWB6GcE3G4sBpSxd5Kh_V_gZTOt-Iy3yRjwuKeuYxjGbLobayc55kXPFfOlKgA65QSQ4wUXy0RYuMMt5z4nISc4yK47Z-J0hgyV1Q6fWJSHFTAkxGvWkHb-6NG1fDNONBRDkGaHrIu9BQ2yZfObbOv2HXg_a2ZLSR_zuK6KSp8hqW2Mn0v7EcXThXHw9Gk6_5ig');
+            background-image: url('https://media.istockphoto.com/id/2156510638/es/v%C3%ADdeo/apilamiento-manual-de-monedas-con-gr%C3%A1fico-ascendente.jpg?s=640x640&k=20&c=8Dj4Px_T7eJhdw0oU36mB_27sj0OUA1bfPpID_z-jfM=');
           "
         ></div>
         <div
-          class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"
+          class="absolute inset-0 bg-gradient-to-t from-black/100 to-transparent"
         ></div>
         <div class="relative z-10 flex items-center gap-3">
           <div class="text-primary">

@@ -34,7 +34,7 @@
         </div>
     {% if request.user.is_staff %}
     <button
-      class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em]"
+      class="cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em]"
     >
       <a href="{% url 'artist_add' %}" class="truncate">Agregar Artista</a>
     </button>
@@ -107,53 +107,4 @@
       </tbody>
     </table>
   </div>
-  <!-- <div class="flex items-center justify-center p-4 mt-4">
-    <a
-      class="flex size-10 items-center justify-center text-[#92a4c9] hover:text-white"
-      href="#"
-    >
-      <span class="material-symbols-outlined">chevron_left</span>
-    </a>
-    <a
-      class="text-sm font-bold leading-normal tracking-[0.015em] flex size-10 items-center justify-center text-white rounded-full bg-primary"
-      href="#"
-      >1</a
-    >
-    <a
-      class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-white rounded-full hover:bg-primary/30"
-      href="#"
-      >2</a
-    >
-    <a
-      class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-white rounded-full hover:bg-primary/30"
-      href="#"
-      >3</a
-    >
-    <span
-      class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-white rounded-full"
-      >...</span
-    >
-    <a
-      class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-white rounded-full hover:bg-primary/30"
-      href="#"
-      >8</a
-    >
-    <a
-      class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-white rounded-full hover:bg-primary/30"
-      href="#"
-      >9</a
-    >
-    <a
-      class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-white rounded-full hover:bg-primary/30"
-      href="#"
-      >10</a
-    >
-    <a
-      class="flex size-10 items-center justify-center text-[#92a4c9] hover:text-white"
-      href="#"
-    >
-      <span class="material-symbols-outlined">chevron_right</span>
-    </a>
-  </div>
-</div> -->
 {% endblock %}

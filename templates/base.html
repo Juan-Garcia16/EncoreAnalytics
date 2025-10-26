@@ -1,8 +1,35 @@
 <!DOCTYPE html>
-<html class="dark" lang="es">
+<html class="dark min-h-screen h-full overflow-hidden bg-gradient-to-b from-background-light to-background-light-end dark:from-background-dark dark:to-background-dark-end" lang="es">
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <style>
+  /* Scrollbar moderno para navegadores WebKit (Brave, Chrome, Safari) */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #0b1322; /* color del fondo (oscuro) */
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background-color: #324467; /* color del thumb (barra) */
+        border-radius: 10px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: #135bec; /* azul primario al hacer hover */
+      }
+
+      /* Firefox */
+      html {
+        scrollbar-width: thin;
+        scrollbar-color: #324467 #0b1322;
+      }
+    </style>
     <title>EncoreAnalytics</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
@@ -12,33 +39,57 @@
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
     <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              primary: "#135bec",
-              "background-light": "#f6f6f8",
-              "background-dark": "#101622",
+    tailwind.config = {
+    darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            // Conservamos tu azul principal y añadimos variantes
+            primary: {
+              DEFAULT: '#135bec',
+              600: '#0f4ed9',
+              400: '#3a7bff'
             },
-            fontFamily: {
-              display: ["Manrope", "sans-serif"],
-            },
-            borderRadius: {
-              DEFAULT: "0.25rem",
-              lg: "0.5rem",
-              xl: "0.75rem",
-              full: "9999px",
-            },
+            // tonos de fondo y superficie para evitar planos
+            'background-light': '#f3f7ff',
+            'background-light-end': '#eaf2ff',
+            'background-dark': '#071225',
+            'background-dark-end': '#000000',
+            // superficies y tarjetas
+            surface: '#0f1724',
+            'surface-dark': '#05060a',
+            // color específico para la barra lateral para diferenciarla (más oscuro)
+            sidebar: '#071018',
+            card: '#111827',
+            // acentos y utilidades
+            accent: '#ffb86b',
+            muted: '#92a4c9',
+            black: '#000000'
           },
-        },
-      };
+          fontFamily: {
+            display: ["Manrope", "sans-serif"],
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            full: "9999px",
+          },
+          boxShadow: {
+            subtle: '0 6px 18px rgba(2,6,23,0.45)',
+            'white-glow': '0 20px 40px rgba(255,255,255,0.06), 0 6px 18px rgba(255,255,255,0.04)',
+            // shadow that spreads more evenly around the card (not only downwards)
+            'card-glow': '0 -8px 30px rgba(255,255,255,0.02), 0 8px 34px rgba(255,255,255,0.04), 0 2px 12px rgba(2,6,23,0.6)'
+          }
+        }
+      }
+    };
     </script>
   </head>
-  <body class="bg-background-light dark:bg-background-dark font-display">
+  <body class="overflow-y-auto overscroll-none min-h-screen h-full bg-gradient-to-b from-background-light to-background-light-end dark:from-background-dark dark:to-background-dark-end font-display">
     <div class="relative flex min-h-screen w-full flex-col">
       <header
-        class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#232f48] px-10 py-3 bg-[#111722]/80 backdrop-blur-sm sticky top-0 z-20 h-16"
+        class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#232f48] px-10 py-3 bg-surface-dark/90 backdrop-blur-sm sticky top-0 z-20 h-16"
       >
         <div class="flex items-center gap-3">
           <div class="size-8 text-primary">
@@ -68,7 +119,7 @@
       </header>
       <div class="flex flex-1">
         <aside
-          class="w-64 bg-[#111722] p-6 flex flex-col gap-8 border-r border-solid border-[#232f48] md:sticky md:top-16 md:max-h-[calc(100vh-4rem)] md:overflow-y-auto"
+          class="w-64 bg-sidebar p-6 flex flex-col gap-8 md:sticky md:top-16 md:max-h-[calc(100vh-4rem)] md:overflow-y-auto bg-surface-dark/10"
         >
           <nav class="flex flex-col gap-2">
             <p
@@ -145,11 +196,11 @@
             >
           </nav>
         </aside>
-        <main class="flex-1 flex flex-col id="main-content" hx-target="this" hx-swap="innerHTML"">
+        <main id="main-content" class="flex-1 flex flex-col bg-black text-white" hx-target="this" hx-swap="innerHTML">
           {% block content %}{% endblock %}
         </main>
       </div>
-      <footer class="bg-[#111722] text-white/70 py-6 px-10 mt-auto border-t border-solid border-[#232f48]">
+      <footer class="bg-surface-dark text-white/70 py-6 px-10 mt-auto border-t border-solid border-[#232f48]">
         <div
           class="container mx-auto flex flex-col items-center justify-center gap-4 text-center"
         >
