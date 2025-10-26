@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponseNotAllowed
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from .models import Artist, City, Venue
@@ -54,6 +55,18 @@ class ArtistUpdateView(UpdateView):
         context['countries'] = get_countries()
         context['genres'] = get_genres()
         return context
+
+
+def artist_delete(request, pk):
+    """Delete an artist. Accepts POST only and redirects to artist list."""
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    artist = get_object_or_404(Artist, pk=pk)
+    # Optional: restrict deletion to staff users
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect('artist_list')
+    artist.delete()
+    return redirect('artist_list')
     
 # City views
 class CityListView(ListView):

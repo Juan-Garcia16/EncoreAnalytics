@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>EncoreAnalytics - Próximos Conciertos</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+    </style>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#135bec",
+              "background-light": "#f6f6f8",
+              "background-dark": "#101622",
+            },
+            fontFamily: {
+              display: ["Manrope", "Noto Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-background-light dark:bg-background-dark font-display">
+    <div
+      class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden"
+    >
+      <div class="layout-container flex h-full grow flex-col">
+        <div class="flex flex-1 justify-center py-5">
+          <div
+            class="layout-content-container flex flex-col max-w-[960px] flex-1"
+          >
+            <header
+              class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#232f48] px-10 py-3"
+            >
+              <div class="flex items-center gap-8">
+                <div class="flex items-center gap-4 text-white">
+                  <div class="size-6 text-primary">
+                    <svg
+                      fill="none"
+                      viewbox="0 0 48 48"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M24 45.8096C19.6865 45.8096 15.4698 44.5305 11.8832 42.134C8.29667 39.7376 5.50128 36.3314 3.85056 32.3462C2.19985 28.361 1.76794 23.9758 2.60947 19.7452C3.451 15.5145 5.52816 11.6284 8.57829 8.5783C11.6284 5.52817 15.5145 3.45101 19.7452 2.60948C23.9758 1.76795 28.361 2.19986 32.3462 3.85057C36.3314 5.50129 39.7376 8.29668 42.134 11.8833C44.5305 15.4698 45.8096 19.6865 45.8096 24L24 24L24 45.8096Z"
+                        fill="currentColor"
+                      ></path>
+                    </svg>
+                  </div>
+                  <h2
+                    class="text-white text-lg font-bold leading-tight tracking-[-0.015em]"
+                  >
+                    EncoreAnalytics
+                  </h2>
+                </div>
+                <div class="flex items-center gap-9">
+                  <a
+                    class="text-white text-sm font-medium leading-normal"
+                    href="#"
+                    >Explorar</a
+                  >
+                  <a
+                    class="text-[#92a4c9] text-sm font-medium leading-normal"
+                    href="#"
+                    >Mis Artistas</a
+                  >
+                  <a
+                    class="text-[#92a4c9] text-sm font-medium leading-normal"
+                    href="#"
+                    >Perfil</a
+                  >
+                </div>
+              </div>
+              <div class="flex flex-1 justify-end gap-4 items-center">
+                <label class="flex flex-col min-w-40 !h-10 max-w-64">
+                  <div
+                    class="flex w-full flex-1 items-stretch rounded-lg h-full"
+                  >
+                    <div
+                      class="text-[#92a4c9] flex border-none bg-[#232f48] items-center justify-center pl-3 rounded-l-lg border-r-0"
+                    >
+                      <span class="material-symbols-outlined">search</span>
+                    </div>
+                    <input
+                      class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-[#232f48] focus:border-none h-full placeholder:text-[#92a4c9] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                      placeholder="Buscar..."
+                      value=""
+                    />
+                  </div>
+                </label>
+                <div
+                  class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                  data-alt="User profile picture"
+                  style="
+                    background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuANRfKxFjMQgsJNGvBHMcKwYBZ7pd7uAExrlZIkqwUH6yZsviD3vOBZ_V_Cv5xRosjXoht-mp-o8dkN-Go41EJnk1v4DJjqA8Ve9S64YHmoQN2mnqs3zw3jDXM5y2prwyMkAKPVjdFJU57VMyf2VtP-3fpOp2kQ-j67M8dSIQJ2PTHJ0LBKuMpzvSHGRTtfE64JZazydXF2HqjJhB6WywjIJd5ZT-4w4b7ExwJzj40G6jjuA7VF8kUdXeYny0JUCV_NBdp4sl9n8H0');
+                  "
+                ></div>
+              </div>
+            </header>
+            <main class="flex flex-col gap-6 px-4 py-8 md:px-10">
+              <div class="flex flex-wrap justify-between items-center gap-4">
+                <div class="flex min-w-72 flex-col gap-2">
+                  <p
+                    class="text-white text-4xl font-black leading-tight tracking-[-0.033em]"
+                  >
+                    Explora Próximos Conciertos
+                  </p>
+                  <p
+                    class="text-[#92a4c9] text-base font-normal leading-normal"
+                  >
+                    Descubre eventos, marca tu interés y no te pierdas a tus
+                    artistas favoritos.
+                  </p>
+                </div>
+              </div>
+              <div class="flex gap-3 p-3 overflow-x-auto">
+                <button
+                  class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#232f48] pl-4 pr-2"
+                >
+                  <p class="text-white text-sm font-medium leading-normal">
+                    Ciudad
+                  </p>
+                  <span class="material-symbols-outlined text-white text-base"
+                    >expand_more</span
+                  >
+                </button>
+                <button
+                  class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#232f48] pl-4 pr-2"
+                >
+                  <p class="text-white text-sm font-medium leading-normal">
+                    Fecha
+                  </p>
+                  <span class="material-symbols-outlined text-white text-base"
+                    >expand_more</span
+                  >
+                </button>
+                <button
+                  class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#232f48] pl-4 pr-2"
+                >
+                  <p class="text-white text-sm font-medium leading-normal">
+                    Género
+                  </p>
+                  <span class="material-symbols-outlined text-white text-base"
+                    >expand_more</span
+                  >
+                </button>
+              </div>
+              <div class="flex flex-col gap-6">
+                <div
+                  class="flex flex-col items-stretch justify-start rounded-xl shadow-[0_0_4px_rgba(0,0,0,0.1)] bg-[#192233] overflow-hidden"
+                >
+                  <div
+                    class="w-full bg-center bg-no-repeat aspect-[16/6] bg-cover"
+                    data-alt="The Midnight concert promotional image"
+                    style="
+                      background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDcsJV5mWg27f_e-MDYB4o_IBA8d2ga7rKg8bXYKYig5mOo_NXZBFMrp47xdhEKv7fymwGHD6zZlzClJSUbF_l0wV3qP7x6EP6F73koqbkktkFO7s5FovfkQ3HD3V85bkSku9eB1Aj-Sp-btXIirhlojLeEyXMhfP2zrOR9CrU1PjEoQ8ix5Z9BO46yofu07joZtqEJMlg_Ov_r00iUq55frsPGOEfb02IQwsta2iBk_WvCuoXyIshKou1yrHV1TABgADrhI7q8QjA');
+                    "
+                  ></div>
+                  <div class="p-4 flex flex-col gap-4">
+                    <div
+                      class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1"
+                    >
+                      <p
+                        class="text-white text-2xl font-bold leading-tight tracking-[-0.015em]"
+                      >
+                        The Midnight
+                      </p>
+                      <p
+                        class="text-[#92a4c9] text-base font-normal leading-normal"
+                      >
+                        The 'Monsters' Tour
+                      </p>
+                      <p
+                        class="text-white text-base font-normal leading-normal"
+                      >
+                        25 de Octubre, 2024 - Palacio de los Deportes, CDMX
+                      </p>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <div
+                        class="flex items-center justify-center gap-2 px-3 py-2"
+                      >
+                        <span
+                          class="material-symbols-outlined text-primary"
+                          style="font-variation-settings: 'FILL' 1"
+                          >star</span
+                        >
+                        <p
+                          class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]"
+                        >
+                          Me interesa
+                        </p>
+                        <span class="material-symbols-outlined text-primary"
+                          >local_fire_department</span
+                        >
+                        <p
+                          class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]"
+                        >
+                          1.2K fans interesados
+                        </p>
+                      </div>
+                      <button
+                        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold leading-normal"
+                      >
+                        <span class="truncate">Ver Detalles</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="flex flex-col items-stretch justify-start rounded-xl shadow-[0_0_4px_rgba(0,0,0,0.1)] bg-[#192233] overflow-hidden"
+                >
+                  <div
+                    class="w-full bg-center bg-no-repeat aspect-[16/6] bg-cover"
+                    data-alt="Porter Robinson concert promotional image"
+                    style="
+                      background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCFPc3z7ODlq1FusP1ewuLcId5DYtz0nwM_LXlG9hxUcHK3VeTtpJe3hT7nG_2I5OsrdMGwHoD4rA9m-YJkBIJAv52pABJCfvYWUEllaj-6qwNVStlIYjbmSqFbQQfnWGbqzTrGHIZV6X1pOAqkIhwG8gS2tXben2sN1TONLFjvpJ03ZvvjIorp4W-c-7qseG8FXG4RCfzlYlWURMKN6JlbeAOLA6BBhELZ5Uwsd5ormNRIu3J8veZUZRMQjnuKH-vwpyea2Q_rqtM');
+                    "
+                  ></div>
+                  <div class="p-4 flex flex-col gap-4">
+                    <div
+                      class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1"
+                    >
+                      <p
+                        class="text-white text-2xl font-bold leading-tight tracking-[-0.015em]"
+                      >
+                        Porter Robinson
+                      </p>
+                      <p
+                        class="text-[#92a4c9] text-base font-normal leading-normal"
+                      >
+                        'Nurture' Live
+                      </p>
+                      <p
+                        class="text-white text-base font-normal leading-normal"
+                      >
+                        12 de Noviembre, 2024 - Auditorio Nacional, CDMX
+                      </p>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <div
+                        class="flex items-center justify-center gap-2 px-3 py-2"
+                      >
+                        <span class="material-symbols-outlined text-[#92a4c9]"
+                          >star</span
+                        >
+                        <p
+                          class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]"
+                        >
+                          Me interesa
+                        </p>
+                        <span class="material-symbols-outlined text-[#92a4c9]"
+                          >local_fire_department</span
+                        >
+                        <p
+                          class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]"
+                        >
+                          980 fans interesados
+                        </p>
+                      </div>
+                      <button
+                        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold leading-normal"
+                      >
+                        <span class="truncate">Ver Detalles</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="flex flex-col items-stretch justify-start rounded-xl shadow-[0_0_4px_rgba(0,0,0,0.1)] bg-[#192233] overflow-hidden"
+                >
+                  <div
+                    class="w-full bg-center bg-no-repeat aspect-[16/6] bg-cover"
+                    data-alt="Odesza concert promotional image"
+                    style="
+                      background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD2kI_JseSKvxtSgz_33k8vRMZ7Nn4UUuKtDbQXa7Xuy5y7U9lFyMB7bG8G2r81tInaXe8DHl2vZUqAHWdzX5smVdnywt22zhoB9QXK1XMyJNCl5epV4YF_BY4sierhXoX6W2HjjQ1C14Epr7pPgy1TtblAO5nPqtgao_m6zlWws-YTxvRIP7bP70CCu0MJCgN5yCky6hwztILDTOT93zSTj9Bk3FzKCwUKunYkzPnUN8RVVpXdjGJgORumQ3_iCnMvIeCihOCd7lA');
+                    "
+                  ></div>
+                  <div class="p-4 flex flex-col gap-4">
+                    <div
+                      class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1"
+                    >
+                      <p
+                        class="text-white text-2xl font-bold leading-tight tracking-[-0.015em]"
+                      >
+                        Odesza
+                      </p>
+                      <p
+                        class="text-[#92a4c9] text-base font-normal leading-normal"
+                      >
+                        The Last Goodbye Tour
+                      </p>
+                      <p
+                        class="text-white text-base font-normal leading-normal"
+                      >
+                        3 de Diciembre, 2024 - Arena Monterrey, MTY
+                      </p>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <div
+                        class="flex items-center justify-center gap-2 px-3 py-2"
+                      >
+                        <span class="material-symbols-outlined text-[#92a4c9]"
+                          >star</span
+                        >
+                        <p
+                          class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]"
+                        >
+                          Me interesa
+                        </p>
+                        <span class="material-symbols-outlined text-[#92a4c9]"
+                          >local_fire_department</span
+                        >
+                        <p
+                          class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]"
+                        >
+                          850 fans interesados
+                        </p>
+                      </div>
+                      <button
+                        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold leading-normal"
+                      >
+                        <span class="truncate">Ver Detalles</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </main>
+            <footer
+              class="text-center text-[#92a4c9] py-8 border-t border-solid border-b-[#232f48] mt-8"
+            >
+              <p>© 2024 EncoreAnalytics. Todos los derechos reservados.</p>
+              <div class="flex justify-center gap-4 mt-2">
+                <a class="text-sm" href="#">Términos de Servicio</a>
+                <a class="text-sm" href="#">Política de Privacidad</a>
+                <a class="text-sm" href="#">Contacto</a>
+              </div>
+            </footer>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -171,11 +171,14 @@
               class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-primary/10 transition-colors"
               href="#"
               ><span class="material-symbols-outlined">map</span>Giras</a
-            ><a
+            >
+            {% if request.user.is_staff %}
+            <a
               class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-primary/10 transition-colors"
               href="#"
               ><span class="material-symbols-outlined">groups</span>Fans</a
             >
+            {% endif %}
           </nav>
           <nav class="flex flex-col gap-2">
             <p

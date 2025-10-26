@@ -33,11 +33,13 @@
           </form>
         </div>
     {% if request.user.is_staff %}
+    <a href="{% url 'artist_add' %}">
     <button
-      class="cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em]"
+      class="cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] truncate"
     >
-      <a href="{% url 'artist_add' %}" class="truncate">Agregar Artista</a>
+      Agregar Artista
     </button>
+    </a>
     {% endif %}
     </div>
   </div>
@@ -59,9 +61,11 @@
           <th class="px-6 py-4 text-white text-sm font-medium leading-normal">
             GÉNERO
           </th>
+          {% if request.user.is_authenticated and request.user.is_staff %}
           <th
-            class="px-6 py-4 text-white text-sm font-medium leading-normal"
-          ></th>
+            class="px-6 py-4 text-white text-sm font-medium leading-normal text-center"
+          >OPCIONES</th>
+          {% endif %}
         </tr>
       </thead>
       <tbody class="divide-y divide-[#324467]">
@@ -86,13 +90,25 @@
               >{{ artist.genre }}</span
             >
           </td>
-          <td class="px-6 py-4 text-right">
-            <a href="{% url 'artist_edit' artist.pk %}"
-              class="text-primary hover:text-white text-sm font-bold leading-normal tracking-[0.015em]"
-            >
-              Editar
-            </a>
+          {% if request.user.is_authenticated and request.user.is_staff %}
+          <td class="px-6 py-4">
+            <div class="flex items-center justify-center gap-4">
+              <a href="{% url 'artist_edit' artist.pk %}"
+                class="text-primary hover:text-white text-sm font-bold leading-normal tracking-[0.015em]"
+              >
+                Editar
+              </a>
+              
+              <form action="{% url 'artist_delete' artist.pk %}" method="post" onsubmit="return confirm('¿Eliminar este artista? Esta acción borrará todos sus datos relacionados.');">
+                {% csrf_token %}
+                <button type="submit" class="text-red-400 hover:text-white text-sm font-bold flex items-center" aria-label="Eliminar artista">
+                  <span class="material-symbols-outlined">delete</span>
+                </button>
+              </form>
+              
+            </div>
           </td>
+          {% endif %}
         </tr>
         {% empty %}
         <tr>
