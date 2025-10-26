@@ -91,6 +91,7 @@
       <header
         class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#232f48] px-10 py-3 bg-surface-dark/90 backdrop-blur-sm sticky top-0 z-20 h-16"
       >
+        <a href="{% url 'dashboard' %}" class="">
         <div class="flex items-center gap-3">
           <div class="size-8 text-primary">
             <svg
@@ -104,12 +105,14 @@
               ></path>
             </svg>
           </div>
+          
           <h2
             class="text-white text-xl font-bold leading-tight tracking-[-0.015em]"
           >
             EncoreAnalytics
           </h2>
         </div>
+        </a>
         <button
           class="flex items-center gap-2 rounded-lg bg-primary/20 hover:bg-primary/30 px-4 py-2 text-sm font-medium text-primary transition-colors"
         >
