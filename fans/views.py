@@ -6,6 +6,7 @@ from django.contrib.auth import login
 from .forms import UserRegisterForm, FanProfileForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
+from django.db.models import Q
 # Create your views here.
 
 # ----- FAN -----
@@ -13,12 +14,25 @@ class FanListView(ListView):
     model = Fan
     template_name = 'fans/fan_list.html'
     context_object_name = 'fans'
+    qeryset = Fan.objects.all().order_by('full_name')
+    
+    def get_queryset(self):
+        qs = super().get_queryset()
+        q = self.request.GET.get('query_fans', '').strip()
+        if q:
+            # Buscar por nombre o ciudad (case-insensitive)
+            qs = qs.filter(
+                Q(full_name__icontains=q) | Q(city__name__icontains=q)
+            ).order_by('full_name')
+        return qs
 
 class FanCreateView(CreateView):
     model = Fan
-    fields = ['full_name', 'email', 'city', 'birthdate'] #no se incluyeron favorite_concerts
+    form_class = FanProfileForm
     template_name = 'fans/fan_form.html'
     success_url = reverse_lazy('fan_list')
+    
+    #SE PODRIA AÑADIR LISTA DE CIUDADES PARA EL FORMULARIO
 
 # ----- ATTENDANCE -----
 class AttendanceListView(ListView):
