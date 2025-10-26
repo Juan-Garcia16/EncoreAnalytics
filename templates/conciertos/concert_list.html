@@ -1,23 +1,93 @@
-{% extends 'base.html' %}
-{% block title %}Conciertos{% endblock %}
+{% extends 'base.html' %} {% block title %}Conciertos{% endblock %} 
 {% block content %}
-<h2>Conciertos</h2>
-<a href="{% url 'concert_add' %}" class="btn btn-primary mb-3">Agregar Concierto</a>
-<table class="table table-striped">
-    <thead>
-        <tr><th>Artista</th><th>Venue</th><th>Fecha</th><th>Estado</th></tr>
-    </thead>
-    <tbody>
-        {% for concert in concerts %}
-        <tr>
-            <td>{{ concert.artist.name }}</td>
-            <td>{{ concert.venue.name }}</td>
-            <td>{{ concert.start_datetime|date:"d/m/Y H:i" }}</td>
-            <td>{{ concert.get_status_display }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="4">No hay conciertos</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="w-full mx-auto p-8">
+  <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
+    <div class="flex flex-col gap-2">
+      <h1
+        class="text-white text-4xl font-black leading-tight tracking-[-0.033em]"
+      >
+        Conciertos
+      </h1>
+      {% if request.user.is_staff %}
+      <p class="text-[#92a4c9] text-base font-normal leading-normal">
+        Gestiona y organiza los conciertos en tu catálogo.
+      </p>
+        {% else %}
+      <p class="text-[#92a4c9] text-base font-normal leading-normal">
+        Explora y descubre conciertos de tus artistas favoritos.
+      </p>
+        {% endif %}
+    </div>
+    <div class="flex gap-2">
+        <div class="flex items-center gap-8 min-w-[350px] w-full">
+          <form method="get" class="w-full">
+            <label class="flex flex-col min-w-40 !h-10 w-full">
+              <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                <div
+                  class="text-[#92a4c9] flex border-none bg-[#232f48] items-center justify-center pl-4 rounded-l-lg border-r-0"
+                >
+                  <span class="material-symbols-outlined">search</span>
+                </div>
+                <input
+                  name="query_concerts"
+                  value="{{ request.GET.query_concerts|default_if_none:'' }}"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-[#232f48] focus:border-none h-full placeholder:text-[#92a4c9] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                  placeholder="Buscar Conciertos (Artista, Venue)..."
+                />
+              </div>
+            </label>
+          </form>
+        </div>
+    {% if request.user.is_staff %}
+    <a href="{% url 'artist_add' %}">
+    <button
+      class="cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] truncate"
+    >
+        Agregar Concierto
+    </button>
+    </a>
+    {% endif %}
+    </div>
+  </div>
+</div>
+
+
+<div class="layout-content-container px-8 pb-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {% for concert in concerts %}
+    <div
+      class="group flex flex-col items-stretch justify-start rounded-xl shadow-[0_0_4px_rgba(0,0,0,0.1)] bg-[#192233] overflow-hidden transform transition-all duration-200 ease-out hover:scale-105 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(255,255,255,0.06)]"
+    >
+      <div
+        class="w-full bg-center bg-no-repeat aspect-[16/6] bg-cover transition-transform duration-200 transform group-hover:scale-105 h-[225px]"
+        style="background-image: url('{{ concert.img }}');"
+      ></div>
+      <div class="p-4 flex flex-col gap-4">
+        <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1">
+          <p class="text-white text-2xl font-bold leading-tight tracking-[-0.015em]">{{ concert.artist.name }}</p>
+          <p class="text-[#92a4c9] text-base font-normal leading-normal">{{ concert.tour_name }}</p>
+          <p class="text-white text-base font-normal leading-normal">{{ concert.start_datetime|date:"d/m/Y H:i" }} - {{ concert.venue.name }}</p>
+          <p class="text-white text-base font-normal leading-normal">{{ concert.venue.name }}</p>
+        </div>
+        <div class="flex justify-between items-center">
+          <div class="flex items-center justify-center  py-2 pl-0">
+            <span class="material-symbols-outlined text-[#FFE642]" style="font-variation-settings: 'FILL' 1">star</span>
+            <p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em] pr-4 pl-1">Me interesa</p>
+            <span class="material-symbols-outlined text-[#FFA442]">local_fire_department</span>
+            <p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">1.2K fans interesados</p>
+          </div>
+          <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold leading-normal">
+            <span class="truncate">Ver Detalles</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="p-4 text-center col-span-2">
+      <p class="text-[#92a4c9]">No hay conciertos disponibles</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
 {% endblock %}

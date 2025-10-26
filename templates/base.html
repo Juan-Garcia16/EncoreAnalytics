@@ -166,8 +166,13 @@
             
             
             <a
-              class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-primary/10 transition-colors"
-              href="#"
+              href="{% url 'concert_list' %}"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-white transition-colors 
+              {% if request.resolver_match.url_name == 'concert_list' %}
+                  bg-primary/20 hover:bg-primary/30
+              {% else %}
+                  hover:bg-primary/10
+              {% endif %}"
               ><span class="material-symbols-outlined">calendar_today</span
               >Conciertos</a
             ><a

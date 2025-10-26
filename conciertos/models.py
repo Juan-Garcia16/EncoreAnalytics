@@ -20,6 +20,7 @@ class Concert(models.Model):
     start_datetime = models.DateTimeField()
     status = models.CharField(max_length=20, choices=[('scheduled','Programado'),('completed','Realizado'),('canceled','Cancelado')], default='scheduled')
     total_income = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    img = models.URLField(null=True, blank=True)  # URL de la imagen promocional del concierto
     
     def __str__(self):
         return f"{self.artist.name} @ {self.venue.name} - {self.start_datetime.date()}"

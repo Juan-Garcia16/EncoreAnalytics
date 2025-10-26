@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, CreateView
 from django.urls import reverse_lazy
 from .models import Tour, Concert, Song, SetlistEntry
+from django.db.models import Q
 # Create your views here.
 
 # ----- TOUR -----
@@ -21,6 +22,17 @@ class ConcertListView(ListView):
     model = Concert
     template_name = 'conciertos/concert_list.html'
     context_object_name = 'concerts'
+    queryset = Concert.objects.all().order_by('artist__name')
+    
+    def get_queryset(self):
+        qs = super().get_queryset()
+        q = self.request.GET.get('query_concerts', '').strip()
+        if q:
+            # Buscar por Artista, venue
+            qs = qs.filter(
+                Q(artist__name__icontains=q) | Q(venue__name__icontains=q)
+            ).order_by('start_datetime')
+        return qs
 
 class ConcertCreateView(CreateView):
     model = Concert
