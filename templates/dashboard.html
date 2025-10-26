@@ -30,6 +30,8 @@
       </h2>
     </div>
   </div>
+  
+  <!-- Additional dashboard content moved below the main cards so it is visible across breakpoints -->
 
   <!-- spacer to preserve document flow when hero is positioned over the top on md+ -->
   <div class="hidden md:block md:h-[500px]"></div>
@@ -202,5 +204,131 @@
       </div>
     </div>
   </div>
-</div>
+    <!-- Additional dashboard content: quick metrics and upcoming concerts -->
+  <div class="mt-8">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div class="p-4 bg-card rounded-xl shadow-subtle flex items-center gap-4">
+        <div class="text-primary bg-white/5 rounded-full w-12 h-12 flex items-center justify-center">
+          <span class="material-symbols-outlined" style="font-size:28px">mic</span>
+        </div>
+        <div>
+          <p class="text-[#92a4c9] text-sm">Artistas registrados</p>
+          <p class="text-white text-2xl font-bold">{{ artists_count|default:0 }}</p>
+        </div>
+      </div>
+
+      <div class="p-4 bg-card rounded-xl shadow-subtle flex items-center gap-4">
+        <div class="text-primary bg-white/5 rounded-full w-12 h-12 flex items-center justify-center">
+          <span class="material-symbols-outlined" style="font-size:28px">calendar_today</span>
+        </div>
+        <div>
+          <p class="text-[#92a4c9] text-sm">Conciertos totales</p>
+          <p class="text-white text-2xl font-bold">{{ concerts_count|default:0 }}</p>
+        </div>
+      </div>
+
+      <div class="p-4 bg-card rounded-xl shadow-subtle flex items-center gap-4">
+        <div class="text-primary bg-white/5 rounded-full w-12 h-12 flex items-center justify-center">
+          <span class="material-symbols-outlined" style="font-size:28px">groups</span>
+        </div>
+        <div>
+          <p class="text-[#92a4c9] text-sm">Fans registrados</p>
+          <p class="text-white text-2xl font-bold">{{ fans_count|default:0 }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 p-6 bg-card rounded-xl shadow-subtle">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-white text-lg font-bold">Próximos conciertos</h3>
+          <a href="{% url 'concert_list' %}" class="text-primary text-sm">Ver todos</a>
+        </div>
+        {% if upcoming_concerts %}
+        <ul class="space-y-3">
+          {% for c in upcoming_concerts %}
+          <li class="flex items-center justify-between bg-[#0f1724] rounded-md p-3">
+            <div>
+              <p class="text-white font-bold">{{ c.artist.name }} — {{ c.venue.name }}</p>
+              <p class="text-[#92a4c9] text-sm">{{ c.start_datetime|date:"d" }} de {{ c.start_datetime|date:"F, Y - H:i" }}</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <a href="{{ c.get_absolute_url|default:'#' }}" class="px-3 py-1 rounded bg-primary text-sm text-white">Detalles</a>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-[#92a4c9]">No hay conciertos próximos.</p>
+        {% endif %}
+      </div>
+
+      <div class="p-6 bg-card rounded-xl shadow-subtle">
+        <h3 class="text-white text-lg font-bold mb-3">Actividad reciente</h3>
+        <p class="text-[#92a4c9] text-sm">Aquí aparecerán eventos recientes, inscripciones de fans y acciones relevantes.</p>
+        <div class="mt-4 space-y-3">
+          <div class="flex items-start gap-3">
+            <div class="text-primary bg-white/5 rounded-full w-8 h-8 flex items-center justify-center">
+              <span class="material-symbols-outlined" style="font-size:16px">person_add</span>
+            </div>
+            <div>
+              <p class="text-white text-sm font-bold">Nuevo fan registrado</p>
+              <p class="text-[#92a4c9] text-xs">Hace 2 horas</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="text-primary bg-white/5 rounded-full w-8 h-8 flex items-center justify-center">
+              <span class="material-symbols-outlined" style="font-size:16px">event</span>
+            </div>
+            <div>
+              <p class="text-white text-sm font-bold">Concierto agregado</p>
+              <p class="text-[#92a4c9] text-xs">Hace 1 día</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Sección informativa rediseñada: estilo más ligero y texto más grande -->
+  <section class="mt-12">
+    <div class="max-w-5xl mx-auto">
+      <div class="mb-6 text-center">
+        <h3 class="text-white text-2xl md:text-3xl font-bold">Sobre EncoreAnalytics</h3>
+        <p class="text-[#92a4c9] text-lg md:text-xl mt-3 text-balance">EncoreAnalytics centraliza datos de eventos en vivo y ofrece métricas accionables para promotores, artistas y venues. Con esta plataforma podrás analizar asistencia, segmentar fans y medir el impacto de campañas y giras desde un único lugar.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <article class="p-8 pt-0 border border-solid border-[#232f48] rounded-lg bg-transparent min-h-[200px] flex flex-col items-center justify-center text-center">
+          <div class="text-primary rounded-full w-16 h-16 flex items-center justify-center py-0 my-0">
+            <span class="material-symbols-outlined" style="font-size:28px">analytics</span>
+          </div>
+          <h4 class="text-white font-semibold text-2xl md:text-3xl">Análisis de asistencia</h4>
+          <p class="text-[#92a4c9] text-base md:text-lg mt-3 max-w-[30rem]">Detecta tendencias por artista, venue y ciudad para optimizar la programación y mejorar el llenado.</p>
+        </article>
+
+        <article class="p-8 pt-0 border border-solid border-[#232f48] rounded-lg bg-transparent min-h-[200px] flex flex-col items-center justify-center text-center">
+          <div class="text-primary  rounded-full w-16 h-16 flex items-center justify-center py-0 my-0">
+            <span class="material-symbols-outlined" style="font-size:28px">groups</span>
+          </div>
+          <h4 class="text-white font-semibold text-2xl md:text-3xl">Segmentación de fans</h4>
+          <p class="text-[#92a4c9] text-base md:text-lg mt-3 max-w-[30rem]">Agrupa audiencias por comportamiento y preferencias para campañas más relevantes y efectivas.</p>
+        </article>
+
+        <article class="p-8 pt-0 border border-solid border-[#232f48] rounded-lg bg-transparent min-h-[200px] flex flex-col items-center justify-center text-center">
+          <div class="text-primary rounded-full w-16 h-16 flex items-center justify-center py-0 my-0">
+            <span class="material-symbols-outlined" style="font-size:28px">bolt</span>
+          </div>
+          <h4 class="text-white font-semibold text-2xl md:text-3xl">Medición de impacto</h4>
+          <p class="text-[#92a4c9] text-base md:text-lg mt-3 max-w-[30rem]">Relaciona acciones de marketing con resultados reales: ventas, asistencia y engagement.</p>
+        </article>
+      </div>
+
+      <div class="mt-6 text-sm md:text-base justify-center text-center text-balance">
+        <p class="text-[#92a4c9]">Dato curioso: al agregar y analizar datos de múltiples eventos, es posible identificar patrones estacionales y ajustar la programación para maximizar asistencia.</p>
+        <p class="text-[#92a4c9] mt-2">Más detalles y guía de uso en el <a href="/README.md" class="text-white underline">README.md</a> del proyecto.</p>
+      </div>
+    </div>
+  </section>
 {% endblock %}

@@ -7,6 +7,9 @@ from .forms import ArtistForm
 from .countries import get_countries
 from .genres import get_genres
 from django.db.models import Q
+from django.utils import timezone
+from conciertos.models import Concert
+from fans.models import Fan
 
 # Create your views here.
 def HomeView(request):
@@ -67,6 +70,30 @@ def artist_delete(request, pk):
         return redirect('artist_list')
     artist.delete()
     return redirect('artist_list')
+
+
+def dashboard(request):
+    """Render the dashboard with simple metrics and upcoming concerts."""
+    # conteos básicos
+    artists_count = Artist.objects.count()
+    concerts_count = Concert.objects.count()
+    fans_count = Fan.objects.count()
+
+    # próximos conciertos: programados y con fecha >= ahora
+    now = timezone.now()
+    upcoming_concerts = (
+        Concert.objects.filter(status='scheduled', start_datetime__gte=now)
+        .select_related('artist', 'venue')
+        .order_by('start_datetime')[:6]
+    )
+
+    context = {
+        'artists_count': artists_count,
+        'concerts_count': concerts_count,
+        'fans_count': fans_count,
+        'upcoming_concerts': upcoming_concerts,
+    }
+    return render(request, 'dashboard.html', context)
     
 # City views
 class CityListView(ListView):
