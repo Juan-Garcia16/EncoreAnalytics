@@ -32,7 +32,10 @@ class ConcertListView(ListView):
         if q:
             # Buscar por Artista, venue
             qs = qs.filter(
-                Q(artist__name__icontains=q) | Q(venue__name__icontains=q)
+                Q(artist__name__icontains=q)
+                | Q(venue__name__icontains=q)
+                | Q(venue__city__name__icontains=q)
+                | Q(venue__city__country__icontains=q)
             ).order_by('start_datetime')
         # Filtrar por estado si se pasa en la querystring
         if status:
