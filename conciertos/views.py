@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, CreateView
 from django.urls import reverse_lazy
 from .models import Tour, Concert, Song, SetlistEntry
+from .forms import ConcertForm
 from django.db.models import Q
 # Create your views here.
 
@@ -27,16 +28,28 @@ class ConcertListView(ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         q = self.request.GET.get('query_concerts', '').strip()
+        status = self.request.GET.get('status', '').strip()
         if q:
             # Buscar por Artista, venue
             qs = qs.filter(
                 Q(artist__name__icontains=q) | Q(venue__name__icontains=q)
             ).order_by('start_datetime')
+        # Filtrar por estado si se pasa en la querystring
+        if status:
+            qs = qs.filter(status=status)
         return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Pasar opciones de estado al template (value, label)
+        status_field = Concert._meta.get_field('status')
+        context['status_choices'] = status_field.choices
+        context['selected_status'] = self.request.GET.get('status', '')
+        return context
 
 class ConcertCreateView(CreateView):
     model = Concert
-    fields = ['artist', 'venue', 'tour', 'start_datetime', 'status', 'total_income']
+    form_class = ConcertForm
     template_name = 'conciertos/concert_form.html'
     success_url = reverse_lazy('concert_list')
 
