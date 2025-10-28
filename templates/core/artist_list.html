@@ -35,7 +35,7 @@
     {% if request.user.is_staff %}
     <a href="{% url 'artist_add' %}">
     <button
-      class="cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] truncate"
+      class="cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] truncate hover:bg-primary/50 transition-colors duration-200 ease-in-out"
     >
       Agregar Artista
     </button>

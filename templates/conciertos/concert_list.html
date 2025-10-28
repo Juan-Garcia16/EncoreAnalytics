@@ -45,7 +45,7 @@
     {% if request.user.is_staff %}
     <a href="{% url 'concert_add' %}">
     <button
-      class="cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] truncate"
+      class="cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] truncate hover:bg-primary/50 transition-colors duration-200 ease-in-out"
     >
         Agregar Concierto
     </button>
@@ -60,12 +60,21 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     {% for concert in concerts %}
     <div
-      class="group flex flex-col items-stretch justify-start rounded-xl shadow-[0_0_4px_rgba(0,0,0,0.1)] bg-[#192233] overflow-hidden transform transition-all duration-200 ease-out hover:scale-105 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(255,255,255,0.06)]"
+      class="relative group flex flex-col items-stretch justify-start rounded-xl shadow-[0_0_4px_rgba(0,0,0,0.1)] bg-[#192233] overflow-hidden transform transition-all duration-200 ease-out hover:scale-105 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(255,255,255,0.06)]"
     >
       <div
         class="w-full bg-center bg-no-repeat aspect-[16/6] bg-cover transition-transform duration-200 transform group-hover:scale-105 h-[225px]"
         style="background-image: url('{{ concert.img }}');"
       ></div>
+      {% if request.user.is_staff %}
+        <!-- Delete button over the image (top-right of image) -->
+        <form action="{% url 'concert_delete' concert.pk %}" method="post" onsubmit="return confirm('¿Eliminar este concierto? Esta acción borrará todos sus datos relacionados.');" class="absolute top-3 right-3 z-20">
+          {% csrf_token %}
+          <button type="submit" class="text-red-400 hover:text-white bg-transparent p-2 rounded-md shadow-sm hover:bg-white/5" aria-label="Eliminar concierto">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
+        </form>
+      {% endif %}
       <div class="p-4 flex flex-col gap-4">
         <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1">
           <div class="flex items-center gap-3">
@@ -81,6 +90,7 @@
             {% else %}
               <span class="text-xs font-semibold px-2 py-1 rounded-full bg-gray-500 text-white">{{ concert.status }}</span>
             {% endif %}
+            {# delete button moved to card corner (absolute) #}
           </div>
           <p class="text-[#92a4c9] text-base font-normal leading-normal">{{ concert.tour_name }}</p>
           <p class="text-white text-base font-normal leading-normal">{{ concert.start_datetime|date:"d/m/Y - H:i" }} - {{ concert.venue.name }}</p>
@@ -88,14 +98,30 @@
         </div>
         <div class="flex justify-between items-center">
           <div class="flex items-center justify-center  py-2 pl-0">
+            {% if not request.user.is_staff %}
             <span class="material-symbols-outlined text-[#FFE642]" style="font-variation-settings: 'FILL' 1">star</span>
             <p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em] pr-4 pl-1">Me interesa</p>
+            {% endif %}
             <span class="material-symbols-outlined text-[#FFA442]">local_fire_department</span>
             <p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">1.2K fans interesados</p>
           </div>
+
+          {% if request.user.is_staff %}
+            <div class="flex gap-2">
+              <button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-2 bg-primary text-white text-sm font-bold leading-normal hover:bg-primary/50 transition-colors duration-200 ease-in-out">
+              <span class="truncate">Editar setlist</span>
+              </button>
+              <a href="{% url 'concert_edit' concert.pk %}">
+                <button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-2 bg-primary text-white text-sm font-bold leading-normal hover:bg-primary/50 transition-colors duration-200 ease-in-out">
+                <span class="truncate">Editar concierto</span>
+              </button>
+              </a>
+            </div>
+          {% else %}
           <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold leading-normal">
-            <span class="truncate">Ver Detalles</span>
+            <span class="truncate">Ver setlist</span>
           </button>
+          {% endif %}
         </div>
       </div>
     </div>

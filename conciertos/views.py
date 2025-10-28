@@ -1,5 +1,6 @@
-from django.shortcuts import render
-from django.views.generic import ListView, CreateView
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponseNotAllowed
+from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from .models import Tour, Concert, Song, SetlistEntry
 from .forms import ConcertForm
@@ -55,6 +56,23 @@ class ConcertCreateView(CreateView):
     form_class = ConcertForm
     template_name = 'conciertos/concert_form.html'
     success_url = reverse_lazy('concert_list')
+
+class ConcertUpdateView(UpdateView):
+    model = Concert
+    form_class = ConcertForm
+    template_name = 'conciertos/concert_form.html'
+    success_url = reverse_lazy('concert_list')
+
+def concert_delete(request, pk):
+    """Delete a concert. Accepts POST only and redirects to concert list."""
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    concert = get_object_or_404(Concert, pk=pk)
+    # Optional: restrict deletion to staff users
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect('concert_list')
+    concert.delete()
+    return redirect('concert_list')
 
 # ----- SONG -----
 class SongListView(ListView):
