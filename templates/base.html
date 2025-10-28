@@ -115,7 +115,12 @@
         </a>
         {% if request.user.is_authenticated %}
         <div class="flex items-center gap-3">
-          <span class="text-white text-sm">Hola, {{ request.user.username }}</span>
+          <span class="text-white text-sm">Bienvenido {{ request.user.username }}
+            {% if request.user.is_staff %} 
+            -
+            <span class="text-purple-400">Administrador</span>
+             {% endif %}
+          </span>
           <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
             <button type="submit" class="flex items-center gap-2 rounded-lg bg-primary/20 hover:bg-primary/30 px-4 py-2 text-sm font-medium text-primary transition-colors">
@@ -158,15 +163,6 @@
               ><span class="material-symbols-outlined">dashboard</span
               >Dashboard</a
             >
-            <!-- <a
-  hx-get="{% url 'artist_list' %}"
-  hx-target="#main-content"
-  hx-swap="innerHTML"
-  class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-primary/10 transition-colors"
->
-  <span class="material-symbols-outlined">mic</span>
-  Artistas
-</a> -->
             
             <a
               href="{% url 'artist_list' %}"
