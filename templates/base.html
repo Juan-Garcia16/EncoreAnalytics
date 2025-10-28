@@ -113,12 +113,29 @@
           </h2>
         </div>
         </a>
-        <button
-          class="flex items-center gap-2 rounded-lg bg-primary/20 hover:bg-primary/30 px-4 py-2 text-sm font-medium text-primary transition-colors"
-        >
-          <span class="material-symbols-outlined">admin_panel_settings</span>
-          <span>Perfil de Administrador</span>
-        </button>
+        {% if request.user.is_authenticated %}
+        <div class="flex items-center gap-3">
+          <span class="text-white text-sm">Hola, {{ request.user.username }}</span>
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="flex items-center gap-2 rounded-lg bg-primary/20 hover:bg-primary/30 px-4 py-2 text-sm font-medium text-primary transition-colors">
+              <span class="material-symbols-outlined">logout</span>
+              <span>Cerrar sesión</span>
+            </button>
+          </form>
+        </div>
+        {% else %}
+        <div class="flex items-center gap-3">
+          <a href="{% url 'login' %}" class="flex items-center gap-2 rounded-lg bg-primary/20 hover:bg-primary/30 px-4 py-2 text-sm font-medium text-primary transition-colors">
+            <span class="material-symbols-outlined">login</span>
+            <span>Iniciar sesión</span>
+          </a>
+          <a href="{% url 'register' %}" class="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors">
+            <span class="material-symbols-outlined">person_add</span>
+            <span>Regístrate</span>
+          </a>
+        </div>
+        {% endif %}
       </header>
       <div class="flex flex-1">
         <aside

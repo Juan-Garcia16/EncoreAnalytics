@@ -7,6 +7,9 @@ from .forms import UserRegisterForm, FanProfileForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.db.models import Q
+from django.db import transaction
+from django import forms
+from core.models import City
 # Create your views here.
 
 # ----- FAN -----
@@ -65,18 +68,46 @@ def register(request):
         uform = UserRegisterForm(request.POST)
         pform = FanProfileForm(request.POST)
         if uform.is_valid() and pform.is_valid():
-            user = uform.save(commit=False)
-            user.email = uform.cleaned_data['email']
-            user.save()
-            # crear perfil fan
-            profile = pform.save(commit=False)
-            profile.user = user
-            # si no provees email en profile, aseguramos que coincida
-            if not profile.email:
-                profile.email = user.email
-            profile.save()
-            login(request, user)  # loguea al usuario recién creado
+            # Crear usuario y perfil en una transacción atómica
+            with transaction.atomic():
+                user = uform.save(commit=False)
+                user.email = uform.cleaned_data.get('email')
+                user.save()
+
+                # crear perfil fan (no commit todavía)
+                profile = pform.save(commit=False)
+                # vincular user con fan
+                profile.user = user
+                # si no provees email en profile, aseguramos que coincida
+                if not profile.email:
+                    profile.email = user.email
+
+                # Manejar city: si el formulario devolvió un objeto City, asignarlo.
+                cd_city = pform.cleaned_data.get('city')
+                if isinstance(cd_city, City):
+                    profile.city = cd_city
+                else:
+                    # si se recibió un string (fallback), intentar obtener o crear la ciudad
+                    if isinstance(cd_city, str) and cd_city.strip():
+                        city_obj, _ = City.objects.get_or_create(name=cd_city.strip(), defaults={'country': ''})
+                        profile.city = city_obj
+
+                profile.save()
+            # loguear al usuario recién creado
+            login(request, user)
             return redirect('home')
+        else:
+            # Registrar los errores para visibilidad: añadir mensajes y print a consola
+            # (esto ayuda a debuggear cuando la página simplemente se recarga)
+            for field, errs in uform.errors.items():
+                for e in errs:
+                    messages.error(request, f"User form - {field}: {e}")
+            for field, errs in pform.errors.items():
+                for e in errs:
+                    messages.error(request, f"Profile form - {field}: {e}")
+            # también volcar al stdout para quien corra el servidor
+            print('REGISTER — user form errors:', uform.errors.as_json())
+            print('REGISTER — profile form errors:', pform.errors.as_json())
     else:
         uform = UserRegisterForm()
         pform = FanProfileForm()

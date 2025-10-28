@@ -21,9 +21,10 @@
         theme: {
           extend: {
             colors: {
-              primary: "#3B82F6",
+              primary: "#3A8DFF",
               "background-light": "#f6f6f8",
-              "background-dark": "#101622",
+              "background-dark": "#1A1A1A",
+              "form-background-dark": "#2C2C2C",
             },
             fontFamily: {
               display: ["Manrope", "sans-serif"],
@@ -42,95 +43,153 @@
       .material-symbols-outlined {
         font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
       }
+
+      .form-input {
+        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: #3a8dff;
+        /* No box-shadow here to avoid duplicate shadows when using wrapper */
+      }
+
+      /* Place native date picker control at the right end of the input (WebKit/Blink) */
+      .date-wrapper {
+        position: relative;
+      }
+
+      /* Give space so native control doesn't overlap the typed text */
+      .date-wrapper .form-input[type="date"] {
+        padding-right: 2.5rem;
+      }
+
+      /* Chrome / Edge / Safari: move the native calendar indicator to the right and make it visible/white */
+      .date-wrapper .form-input[type="date"]::-webkit-calendar-picker-indicator {
+        position: absolute;
+        right: 0.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1.25rem;
+        height: 1.25rem;
+        opacity: 1;
+        color: #ffffff;
+        filter: invert(1) brightness(2) contrast(1);
+      }
+
+      /* Firefox: keep the native control, ensure padding is available. Firefox doesn't expose the indicator pseudo-element reliably */
+      .date-wrapper .form-input[type="date"]::-moz-focus-inner {
+        border: 0;
+      }
+
+      /* Date input wrapper to show white calendar icon at the end */
+      .date-wrapper {
+        position: relative;
+      }
+
+      /* No custom padding or icon: rely on the browser's native date picker control */
+      .date-wrapper .form-input {
+        padding-right: 0.75rem; /* keep small inner padding but don't hide native control */
+      }
     </style>
   </head>
   <body
     class="bg-background-light dark:bg-background-dark font-display text-white"
   >
-    <div
-      class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden"
-    >
-      <div class="flex w-full flex-col items-center p-8">
-        <div class="mb-8 text-center w-full">
+    <div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden" style="font-family: Manrope, 'Noto Sans', sans-serif">
+      <div class="layout-container flex h-full grow flex-col">
+        <div class="px-4 flex flex-1 justify-center items-center py-5">
+          <div class="layout-content-container flex flex-col max-w-[480px] w-full flex-1 bg-background-light dark:bg-form-background-dark p-8 md:p-10 rounded-xl shadow-lg">
+            <div class="flex flex-col items-center justify-center mb-6">
+              <a href="{% url 'dashboard' %}" class="flex flex-col items-center no-underline">
+                <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4">
+                  <span class="material-symbols-outlined text-white text-4xl">bar_chart</span>
+                </div>
+                <div class="text-center">
+                  <p class="text-white text-3xl font-bold leading-tight tracking-tight">Crea tu Cuenta</p>
+                  <p class="text-gray-400 text-base font-normal leading-normal mt-2">Únete a EncoreAnalytics y lleva tu música al siguiente nivel.</p>
+                </div>
+              </a>
+            </div>
 
-          <h1 class="text-4xl font-black tracking-tighter text-white mt-4">
-            Crea tu Cuenta
-          </h1>
-          <p class="text-gray-400 mt-2">
-            Únete a EncoreAnalytics y lleva tu música al siguiente nivel.
-          </p>
+            <form method="POST" class="flex flex-col gap-4">
+              {% csrf_token %}
+              {% if messages %}
+                <div class="space-y-1">
+                  {% for message in messages %}
+                    <div class="rounded p-2 text-sm text-red-100 bg-red-800/60">{{ message }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              {% if uform.non_field_errors or pform.non_field_errors %}
+                <div class="bg-red-800/60 rounded p-3 text-sm text-red-100">
+                  {% for err in uform.non_field_errors %}
+                    <div>{{ err }}</div>
+                  {% endfor %}
+                  {% for err in pform.non_field_errors %}
+                    <div>{{ err }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              <label class="flex flex-col">
+                <p class="text-white text-sm font-medium leading-normal pb-2">Nombre de usuario</p>
+                  {{ uform.username }}
+                {% if uform.username.errors %}
+                  <div class="text-red-400 text-sm mt-1">{{ uform.username.errors.as_text|linebreaksbr }}</div>
+                {% endif %}
+              </label>
+
+              <label class="flex flex-col">
+                <p class="text-white text-sm font-medium leading-normal pb-2">Correo electrónico</p>
+                  {{ uform.email }}
+                {% if uform.email.errors %}
+                  <div class="text-red-400 text-sm mt-1">{{ uform.email.errors.as_text|linebreaksbr }}</div>
+                {% endif %}
+              </label>
+
+              <label class="flex flex-col">
+                <p class="text-white text-sm font-medium leading-normal pb-2">Contraseña</p>
+                  {{ uform.password1 }}
+              </label>
+
+              <label class="flex flex-col">
+                <p class="text-white text-sm font-medium leading-normal pb-2">Confirmar contraseña</p>
+                  {{ uform.password2 }}
+              </label>
+
+              <label class="flex flex-col">
+                <p class="text-white text-sm font-medium leading-normal pb-2">Nombre completo</p>
+                  {{ pform.full_name }}
+              </label>
+
+              <label class="flex flex-col">
+                <p class="text-white text-sm font-medium leading-normal pb-2">Ciudad de tu próximo concierto</p>
+                  {{ pform.city }}
+                {% if pform.city.errors %}
+                  <div class="text-red-400 text-sm mt-1">{{ pform.city.errors.as_text|linebreaksbr }}</div>
+                {% endif %}
+              </label>
+
+              <label class="flex flex-col">
+                <p class="text-white text-sm font-medium leading-normal pb-2">Fecha de nacimiento</p>
+                <div class="date-wrapper w-full">
+                  {{ pform.birthdate }}
+                </div>
+                {% if pform.birthdate.errors %}
+                  <div class="text-red-400 text-sm mt-1">{{ pform.birthdate.errors.as_text|linebreaksbr }}</div>
+                {% endif %}
+              </label>
+
+              <button type="submit" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 mt-4 flex-1 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-opacity-90 transition-opacity py-2">Registrarse</button>
+            </form>
+
+            <div class="text-center mt-6">
+              <p class="text-gray-400 text-sm">¿Ya tienes una cuenta? <a href="{% url 'login' %}" class="font-medium text-primary hover:underline">Inicia sesión</a></p>
+            </div>
+          </div>
         </div>
-
-        <form method="POST">
-  {% csrf_token %}
-  <div class="w-full space-y-6">
-    <!-- Nombre completo -->
-    <label class="flex flex-col">
-      <p class="pb-2 text-base font-medium leading-normal text-white">
-        Nombre completo
-      </p>
-      {{ pform.full_name }}
-    </label>
-
-    <!-- Correo electrónico -->
-    <label class="flex flex-col">
-      <p class="pb-2 text-base font-medium leading-normal text-white">
-        Correo electrónico
-      </p>
-      {{ uform.email }}
-    </label>
-
-    <!-- Contraseña -->
-    <label class="flex flex-col">
-      <p class="pb-2 text-base font-medium leading-normal text-white">
-        Contraseña
-      </p>
-      {{ uform.password1 }}
-    </label>
-
-    <!-- Confirmar contraseña -->
-    <label class="flex flex-col">
-      <p class="pb-2 text-base font-medium leading-normal text-white">
-        Confirmar contraseña
-      </p>
-      {{ uform.password2 }}
-    </label>
-
-    <!-- Ciudad -->
-    <label class="flex flex-col">
-      <p class="pb-2 text-base font-medium leading-normal text-white">
-        Ciudad
-      </p>
-      {{ pform.city }}
-    </label>
-
-    <!-- Fecha de nacimiento -->
-    <label class="flex flex-col">
-      <p class="pb-2 text-base font-medium leading-normal text-white">
-        Fecha de nacimiento
-      </p>
-      {{ pform.birthdate }}
-    </label>
-  </div>
-
-  <!-- Botón -->
-  <div class="w-full mt-8">
-    <button
-      class="flex h-14 w-full items-center justify-center rounded-lg bg-primary px-6 text-base font-bold text-white shadow-sm transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-dark"
-      type="submit"
-    >
-      Registrarse
-    </button>
-  </div>
-</form>
-
-
-        <p class="mt-8 text-center text-sm text-gray-400">
-          ¿Ya tienes una cuenta?
-          <a class="font-semibold text-primary hover:underline" href="#"
-            >Inicia sesión</a
-          >
-        </p>
       </div>
     </div>
   </body>

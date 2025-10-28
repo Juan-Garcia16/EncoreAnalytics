@@ -1,10 +1,21 @@
 from django.db import models
+from django.conf import settings
 from core.models import City
 from conciertos.models import Concert
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 class Fan(models.Model):
+    # Vinculación opcional con el usuario de Django.
+    # Se deja null=True/blank=True para conservar compatibilidad con fans
+    # creados antes de añadir usuarios.
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='fan'
+    )
     full_name = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True)
