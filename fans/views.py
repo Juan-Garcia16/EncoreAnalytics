@@ -115,22 +115,29 @@ def register(request):
 
 def login_view(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
+        identifier = request.POST.get('email')  # puede ser correo o username
         password = request.POST.get('password')
 
-        # Django por defecto autentica por username, así que
-        # si registras por email, debemos buscar el username.
         from django.contrib.auth.models import User
-        try:
-            user = User.objects.get(email=email)
-            user = authenticate(request, username=user.username, password=password)
-        except User.DoesNotExist:
-            user = None
+        user = None
+
+        # Intentar autenticar directamente usando lo ingresado como username
+        if identifier and password:
+            user = authenticate(request, username=identifier, password=password)
+
+        # Si no se autenticó, intentar tratar el identificador como email
+        if user is None and identifier and password:
+            # buscar usuarios con ese email (case-insensitive). Puede haber múltiples; probamos hasta autenticar.
+            users_by_email = User.objects.filter(email__iexact=identifier)
+            for u in users_by_email:
+                user = authenticate(request, username=u.username, password=password)
+                if user:
+                    break
 
         if user is not None:
             login(request, user)
             return redirect('dashboard')  # Cambia por la vista que usarás tras login
         else:
-            messages.error(request, 'Correo o contraseña incorrectos')
+            messages.error(request, 'Usuario/correo o contraseña incorrectos')
 
     return render(request, 'users/login.html')

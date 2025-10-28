@@ -132,13 +132,13 @@
               {% endif %}
               <label class="flex flex-col">
                 <p class="text-white text-sm font-medium leading-normal pb-2">
-                  Correo Electrónico
+                  Nombre de usuario o correo
                 </p>
                 <input
                   name="email"
                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border border-gray-700 bg-[#1f1f1f] focus:border-primary h-12 placeholder:text-gray-500 p-3 text-base font-normal leading-normal"
-                  placeholder="tu@email.com"
-                  type="email"
+                  placeholder="username o email"
+                  type="text"
                   value="{{ request.POST.email|default:'' }}"
                 />
               </label>
