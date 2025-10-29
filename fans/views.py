@@ -10,6 +10,11 @@ from django.db.models import Q
 from django.db import transaction
 from django import forms
 from core.models import City
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from conciertos.models import Concert
+from .models import Interest
 # Create your views here.
 
 # ----- FAN -----
@@ -141,3 +146,37 @@ def login_view(request):
             messages.error(request, 'Usuario/correo o contraseña incorrectos')
 
     return render(request, 'users/login.html')
+
+
+# ----- AJAX: toggle interest / count -----
+@login_required
+def toggle_interest(request, concert_id):
+    # only allow POST
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'detail': 'POST required'}, status=405)
+
+    # ensure the user has a Fan profile
+    user = request.user
+    try:
+        fan = user.fan
+    except Exception:
+        return JsonResponse({'status': 'error', 'detail': 'Fan profile not found'}, status=400)
+
+    concert = get_object_or_404(Concert, pk=concert_id)
+
+    existing = Interest.objects.filter(fan=fan, concert=concert).first()
+    if existing:
+        existing.delete()
+        action = 'removed'
+    else:
+        Interest.objects.create(fan=fan, concert=concert)
+        action = 'added'
+
+    count = Interest.objects.filter(concert=concert).count()
+    return JsonResponse({'status': 'ok', 'action': action, 'count': count})
+
+
+def interest_count(request, concert_id):
+    concert = get_object_or_404(Concert, pk=concert_id)
+    count = Interest.objects.filter(concert=concert).count()
+    return JsonResponse({'status': 'ok', 'count': count})

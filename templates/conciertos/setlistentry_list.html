@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Setlist - {{ concert.artist.name }}{% endblock %}
+{% block content %}
+<div class="p-8 max-w-3xl mx-auto">
+  <h1 class="text-white text-2xl font-bold mb-4">Setlist — {{ concert.artist.name }} @ {{ concert.venue.name }} ({{ concert.start_datetime|date:"d/m/Y" }})</h1>
+  {% if setlist_entries %}
+    <ol class="list-decimal pl-6 space-y-2">
+      {% for entry in setlist_entries %}
+        <li class="text-white">{{ entry.position }}. {{ entry.song.title }}{% if entry.section %} — <span class="text-[#92a4c9]">{{ entry.section }}</span>{% endif %}</li>
+      {% endfor %}
+    </ol>
+  {% else %}
+    <p class="text-[#92a4c9]">No hay canciones en el setlist todavía.</p>
+  {% endif %}
+  <div class="mt-6">
+    <a href="{% url 'concert_list' %}" class="text-primary hover:underline">Volver a Conciertos</a>
+  </div>
+</div>
+{% endblock %}

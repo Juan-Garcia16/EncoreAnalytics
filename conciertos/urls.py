@@ -6,4 +6,5 @@ urlpatterns = [
     path('add/', views.ConcertCreateView.as_view(), name='concert_add'),
     path('<int:pk>/edit/', views.ConcertUpdateView.as_view(), name='concert_edit'),
     path('<int:pk>/delete/', views.concert_delete, name='concert_delete'),
+    path('<int:pk>/setlist/', views.concert_setlist, name='concert_setlist'),
 ]

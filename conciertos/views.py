@@ -49,6 +49,20 @@ class ConcertListView(ListView):
         status_field = Concert._meta.get_field('status')
         context['status_choices'] = status_field.choices
         context['selected_status'] = self.request.GET.get('status', '')
+        # Si el usuario está autenticado y tiene perfil de Fan, precomputar los conciertos en los que está interesado
+        user = self.request.user
+        user_interested_ids = []
+        if user.is_authenticated:
+            try:
+                fan = user.fan
+            except Exception:
+                fan = None
+            if fan:
+                qs = context.get('concerts') or self.get_queryset()
+                # import here to avoid circular-imports at module load
+                from fans.models import Interest
+                user_interested_ids = list(Interest.objects.filter(fan=fan, concert__in=qs).values_list('concert_id', flat=True))
+        context['user_interested_ids'] = user_interested_ids
         return context
 
 class ConcertCreateView(CreateView):
@@ -98,4 +112,11 @@ class SetlistEntryCreateView(CreateView):
     fields = ['concert', 'song', 'position', 'section', 'is_cover']
     template_name = 'conciertos/setlistentry_form.html'
     success_url = reverse_lazy('setlistentry_list')
+
+
+def concert_setlist(request, pk):
+    """View to display the setlist entries for a single concert."""
+    concert = get_object_or_404(Concert, pk=pk)
+    entries = SetlistEntry.objects.filter(concert=concert).order_by('position')
+    return render(request, 'conciertos/setlistentry_list.html', {'setlist_entries': entries, 'concert': concert})
 

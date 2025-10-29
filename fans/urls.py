@@ -15,4 +15,7 @@ urlpatterns = [
     path('attendance/add/', views.AttendanceCreateView.as_view(), name='attendance_add'),
     path('interest/', views.InterestListView.as_view(), name='interest_list'),
     path('interest/add/', views.InterestCreateView.as_view(), name='interest_add'),
+    # AJAX endpoints for toggling interest and getting counts
+    path('concert/<int:concert_id>/toggle_interest/', views.toggle_interest, name='toggle_interest'),
+    path('concert/<int:concert_id>/interest_count/', views.interest_count, name='interest_count'),
 ]

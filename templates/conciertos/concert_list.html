@@ -97,13 +97,60 @@
           <p class="text-white text-base font-normal leading-normal">{{ concert.venue.city }}</p>
         </div>
         <div class="flex justify-between items-center">
-          <div class="flex items-center justify-center  py-2 pl-0">
-            {% if not request.user.is_staff %}
-            <span class="material-symbols-outlined text-[#FFE642]" style="font-variation-settings: 'FILL' 1">star</span>
-            <p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em] pr-4 pl-1">Me interesa</p>
-            {% endif %}
-            <span class="material-symbols-outlined text-[#FFA442]">local_fire_department</span>
-            <p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]">1.2K fans interesados</p>
+          <div class="flex items-center justify-center gap-3 py-2 pl-0">
+              {% if not request.user.is_staff %}
+                {% if request.user.is_authenticated and request.user.fan %}
+                    {% if concert.pk in user_interested_ids %}
+                      <button
+                        data-concert-id="{{ concert.pk }}"
+                        data-toggle-url="{% url 'toggle_interest' concert.pk %}"
+                        data-count-url="{% url 'interest_count' concert.pk %}"
+                        class="interest-toggle flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-2 text-sm font-bold leading-normal transition-colors duration-200 ease-in-out bg-yellow-500 text-white
+                        hover:bg-yellow-600"
+                        aria-pressed="true"
+                      >
+                        <span class="material-symbols-outlined interest-icon text-white" style="font-variation-settings: 'FILL' 1">star</span>
+                        <p class="interest-label text-[13px] font-bold leading-normal tracking-[0.015em] pr-4 pl-1">Me interesa</p>
+                      </button>
+                    {% else %}
+                      <button
+                        data-concert-id="{{ concert.pk }}"
+                        data-toggle-url="{% url 'toggle_interest' concert.pk %}"
+                        data-count-url="{% url 'interest_count' concert.pk %}"
+                        class="interest-toggle flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-2 text-sm font-bold leading-normal transition-colors duration-200 ease-in-out bg-primary text-white hover:bg-yellow-600"
+                        aria-pressed="false"
+                      >
+                        <span class="material-symbols-outlined interest-icon text-[#FFE642]" style="font-variation-settings: 'FILL' 1">star</span>
+                        <p class="interest-label text-[13px] font-bold leading-normal tracking-[0.015em] pr-4 pl-1">Me interesa</p>
+                      </button>
+                    {% endif %}
+                {% else %}
+                  <!-- invitación a iniciar sesión para marcar interés -->
+                  <a href="{% url 'login' %}" class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-2 bg-primary text-white text-sm font-bold leading-normal hover:bg-primary/50 transition-colors duration-200 ease-in-out">
+                    <span class="material-symbols-outlined text-[#FFE642]" style="font-variation-settings: 'FILL' 1">star</span>
+                    <p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em] pr-4 pl-1">Me interesa</p>
+                  </a>
+                {% endif %}
+              {% endif %}
+              <!-- Mostrar botón 'Ver setlist' al lado del toggle para usuarios normales -->
+              {% if not request.user.is_staff %}
+                <a href="{% url 'concert_setlist' concert.pk %}" class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal hover:bg-primary/50 transition-colors duration-200 ease-in-out">
+                  <span class="truncate">Ver setlist</span>
+                </a>
+              {% endif %}
+              {% if not request.user.is_staff %}
+              <div class="flex items-center justify-end pl-6">
+                <span class="material-symbols-outlined text-[#FFA442]">local_fire_department</span>
+              <p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]"><span class="interest-count" data-concert-id="{{ concert.pk }}">{{ concert.interested.count }}</span> fans interesados</p>
+              </div>
+              {% else %}
+              <div class="flex items-center">
+                <span class="material-symbols-outlined text-[#FFA442]">local_fire_department</span>
+              <p class="text-[#92a4c9] text-[13px] font-bold leading-normal tracking-[0.015em]"><span class="interest-count" data-concert-id="{{ concert.pk }}">{{ concert.interested.count }}</span> fans interesados</p>
+              </div>
+              {% endif %}
+
+
           </div>
 
           {% if request.user.is_staff %}
@@ -117,10 +164,6 @@
               </button>
               </a>
             </div>
-          {% else %}
-          <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold leading-normal">
-            <span class="truncate">Ver setlist</span>
-          </button>
           {% endif %}
         </div>
       </div>
@@ -133,4 +176,103 @@
   </div>
 </div>
 
+{% endblock %}
+{% block extra_scripts %}
+<script>
+// Delegated event handling + robust toggle for 'Me interesa'
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function formatCount(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (n >= 1000) return (n/1000).toFixed(1).replace(/\.0$/, '') + 'K';
+  return n.toString();
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  const csrftoken = getCookie('csrftoken');
+
+  // Event delegation: handle clicks on any .interest-toggle, even if added later
+  document.body.addEventListener('click', function(ev){
+    const btn = ev.target.closest && ev.target.closest('.interest-toggle');
+    if (!btn) return;
+    ev.preventDefault();
+
+    const url = btn.dataset.toggleUrl;
+    const concertId = btn.dataset.concertId;
+    if (!url || !concertId) {
+      console.warn('missing toggle url or concert id', btn, url, concertId);
+      return;
+    }
+
+    // optimistic UI change: flip visual state immediately
+    const pressed = btn.getAttribute('aria-pressed') === 'true';
+    // compute next state
+    const nextPressed = !pressed;
+    btn.setAttribute('aria-pressed', nextPressed.toString());
+    if (nextPressed) {
+      btn.classList.add('bg-yellow-500');
+      btn.classList.remove('bg-primary');
+      const icon = btn.querySelector('.interest-icon'); if (icon) icon.classList.add('text-white');
+    } else {
+      btn.classList.remove('bg-yellow-500');
+      btn.classList.add('bg-primary');
+      const icon = btn.querySelector('.interest-icon'); if (icon) icon.classList.remove('text-white');
+    }
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrftoken,
+        'Accept': 'application/json'
+      },
+      credentials: 'same-origin'
+    }).then(response => {
+      if (response.status === 401 || response.status === 403) {
+        // not authorized — redirect to login to make behavior clear
+        window.location.href = '{% url "login" %}';
+        return null;
+      }
+      return response.json().catch(err => { console.error('invalid json', err); return null; });
+    }).then(data => {
+      if (!data) return;
+      if (data.status === 'ok') {
+        const countEl = document.querySelector('.interest-count[data-concert-id="'+concertId+'"]');
+        if (countEl) countEl.textContent = formatCount(data.count);
+      } else {
+        console.warn('toggle returned error', data);
+      }
+    }).catch(err => {
+      console.error('toggle interest error', err);
+    });
+  });
+
+  // Poll counts every 10s (adjust if necessary)
+  setInterval(function(){
+    document.querySelectorAll('.interest-count').forEach(function(el){
+      const concertId = el.dataset.concertId;
+      if (!concertId) return;
+      const url = '/fans/concert/'+concertId+'/interest_count/';
+      fetch(url, {credentials: 'same-origin'}).then(r=>r.json()).then(data=>{
+        if (data && data.status === 'ok') {
+          el.textContent = formatCount(data.count);
+        }
+      }).catch(()=>{});
+    });
+  }, 10000);
+
+});
+</script>
 {% endblock %}
