@@ -1,4 +1,5 @@
 from django import forms
+from django.utils import timezone
 from .models import Concert, Tour
 from core.models import Artist, Venue
 
@@ -66,5 +67,30 @@ class ConcertForm(forms.ModelForm):
     class Meta:
         model = Concert
         fields = ['artist', 'venue', 'tour', 'start_datetime', 'status', 'total_income', 'img']
+
+    def clean(self):
+        cleaned = super().clean()
+        status = cleaned.get('status')
+        total_income = cleaned.get('total_income')
+        start_dt = cleaned.get('start_datetime')
+
+        # Only allow total_income when concert status is 'completed'
+        if total_income not in (None, '') and status != 'completed':
+            # attach error to the total_income field
+            self.add_error('total_income', forms.ValidationError(
+                'Solo puede registrar ingresos si el concierto está marcado como "Realizado".'
+            ))
+
+        # If the concert is marked as completed, ensure the start_datetime is not in the future.
+        # i.e. you should not mark a concert as 'Realizado' if its date is after now.
+        if status == 'completed' and start_dt:
+            now = timezone.now()
+            # allow a small tolerance (e.g., seconds) but generally ensure start_dt <= now
+            if start_dt > now:
+                self.add_error('status', forms.ValidationError(
+                    'No se puede marcar como "Realizado" un concierto cuya fecha es futura.'
+                ))
+
+        return cleaned
 
 
