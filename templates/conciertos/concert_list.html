@@ -155,8 +155,11 @@
 
           {% if request.user.is_staff %}
             <div class="flex gap-2">
-              <button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-2 bg-primary text-white text-sm font-bold leading-normal hover:bg-primary/50 transition-colors duration-200 ease-in-out">
-              <span class="truncate">Editar setlist</span>
+              <a href="{% url 'concert_setlist' concert.pk %}">
+                <button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-2 bg-primary text-white text-sm font-bold leading-normal hover:bg-primary/50 transition-colors duration-200 ease-in-out">
+                <span class="truncate">Editar setlist</span>
+                </button>
+              </a>
               </button>
               <a href="{% url 'concert_edit' concert.pk %}">
                 <button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-2 bg-primary text-white text-sm font-bold leading-normal hover:bg-primary/50 transition-colors duration-200 ease-in-out">

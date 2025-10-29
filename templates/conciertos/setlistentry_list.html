@@ -1,16 +1,60 @@
 {% extends 'base.html' %}
 {% block title %}Setlist - {{ concert.artist.name }}{% endblock %}
 {% block content %}
-<div class="p-8 max-w-3xl mx-auto">
-  <h1 class="text-white text-2xl font-bold mb-4">Setlist — {{ concert.artist.name }} @ {{ concert.venue.name }} ({{ concert.start_datetime|date:"d/m/Y" }})</h1>
+<div class="p-8 min-w-[720px] max-w-[900px] mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-white text-2xl font-bold">Setlist - {{ concert.artist.name }}</h2>
+    <div class="text-sm text-[#92a4c9]">{{ concert.venue.name }} · {{ concert.start_datetime|date:"d/m/Y" }}</div>
+  </div>
+
+  {% if user.is_staff %}
+    <div class="mb-6">
+      <a href="{% url 'setlistentry_add' concert_pk=concert.pk %}" class="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded shadow hover:opacity-95">
+        <span class="material-symbols-outlined">add</span> Agregar entrada
+      </a>
+    </div>
+  {% endif %}
+
   {% if setlist_entries %}
-    <ol class="list-decimal pl-6 space-y-2">
+    <div class="space-y-3">
       {% for entry in setlist_entries %}
-        <li class="text-white">{{ entry.position }}. {{ entry.song.title }}{% if entry.section %} — <span class="text-[#92a4c9]">{{ entry.section }}</span>{% endif %}</li>
+        <div class="bg-[#0f1724] border border-[#1f2a44] rounded-lg p-4 flex items-start justify-between shadow-sm">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 flex items-center justify-center bg-[#162033] text-white rounded-md font-semibold">{{ entry.position }}</div>
+            <div>
+              <div class="text-white text-lg font-medium">{{ entry.song.title }}</div>
+              <div class="text-sm text-[#92a4c9] mt-1">
+                {% if entry.section %}Sección: {{ entry.section }} · {% endif %}
+                {% if entry.song.original_artist %}
+                  {{ entry.song.original_artist.name }}
+                {% elif entry.song.original_artist_name %}
+                  {{ entry.song.original_artist_name }}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% if user.is_staff %}
+            <div class="flex items-center gap-3">
+              <a href="{% url 'setlistentry_edit' pk=entry.pk %}" class="inline-flex items-center gap-2 px-3 py-1 bg-[#1b2a44] text-[#92a4c9] rounded hover:bg-[#21324a]">
+                <span class="material-symbols-outlined">edit</span>
+                <span class="text-sm">Editar</span>
+              </a>
+              <form method="post" action="{% url 'setlistentry_delete' pk=entry.pk %}" class="inline-block">
+                {% csrf_token %}
+                <button type="submit" class="inline-flex items-center gap-2 px-3 py-1 bg-transparent text-red-400 rounded hover:bg-[#2a1b1b]">
+                  <span class="material-symbols-outlined">delete</span>
+                  <span class="text-sm">Borrar</span>
+                </button>
+              </form>
+            </div>
+          {% endif %}
+        </div>
       {% endfor %}
-    </ol>
+    </div>
   {% else %}
-    <p class="text-[#92a4c9]">No hay canciones en el setlist todavía.</p>
+    <div class="bg-[#0f1724] border border-dashed border-[#243048] rounded-lg p-6 text-center">
+      <p class="text-[#92a4c9]">No hay canciones en el setlist todavía. Usa "Agregar entrada" para comenzar.</p>
+    </div>
   {% endif %}
   <div class="mt-6">
     <a href="{% url 'concert_list' %}" class="text-primary hover:underline">Volver a Conciertos</a>

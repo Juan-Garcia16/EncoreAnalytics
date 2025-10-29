@@ -2,6 +2,7 @@ from django import forms
 from django.utils import timezone
 from .models import Concert, Tour
 from core.models import Artist, Venue
+from .models import SetlistEntry, Song
 
 
 class ConcertForm(forms.ModelForm):
@@ -92,5 +93,60 @@ class ConcertForm(forms.ModelForm):
                 ))
 
         return cleaned
+
+
+class SetlistEntryForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        # Accept a `concert` kwarg to validate uniqueness of `position` within that concert
+        self._concert = kwargs.pop('concert', None)
+        super().__init__(*args, **kwargs)
+        # If the form was instantiated with an instance, ensure we have the concert
+        if not self._concert and hasattr(self, 'instance') and getattr(self.instance, 'concert', None):
+            self._concert = self.instance.concert
+
+    class Meta:
+        model = SetlistEntry
+        fields = ['song', 'position', 'section', 'is_cover']
+        widgets = {
+            'song': forms.Select(attrs={'class': 'form-input h-14 w-full rounded-lg bg-[#232f48] p-4 text-white'}),
+            'position': forms.NumberInput(attrs={'class': 'form-input h-14 w-full rounded-lg bg-[#232f48] p-4 text-white'}),
+            'section': forms.TextInput(attrs={'class': 'form-input h-14 w-full rounded-lg bg-[#232f48] p-4 text-white'}),
+            'is_cover': forms.CheckboxInput(attrs={'class': 'ml-2'}),
+        }
+
+        def clean_position(self):
+            pos = self.cleaned_data.get('position')
+            if pos is None:
+                return pos
+
+            concert = self._concert
+            if not concert:
+                # If we don't know the concert yet, skip uniqueness check (view should pass concert)
+                return pos
+
+            def clean_song(self):
+                song = self.cleaned_data.get('song')
+                if not song:
+                    return song
+
+                concert = self._concert
+                if not concert:
+                    # If we don't know the concert yet, skip uniqueness check
+                    return song
+
+                qs = SetlistEntry.objects.filter(concert=concert, song=song)
+                if self.instance and self.instance.pk:
+                    qs = qs.exclude(pk=self.instance.pk)
+                if qs.exists():
+                    raise forms.ValidationError('Esta canción ya está en el setlist para este concierto.')
+                return song
+
+            qs = SetlistEntry.objects.filter(concert=concert, position=pos)
+            # exclude self when editing
+            if self.instance and self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise forms.ValidationError('Ya existe una canción en esa posición para este concierto.')
+            return pos
 
 

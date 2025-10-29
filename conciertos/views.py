@@ -3,8 +3,13 @@ from django.http import HttpResponseNotAllowed
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from .models import Tour, Concert, Song, SetlistEntry
-from .forms import ConcertForm
-from django.db.models import Q
+from core.models import Artist
+from .forms import ConcertForm, SetlistEntryForm
+from django.contrib.admin.views.decorators import staff_member_required
+from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
+from django.db.models import Q, Max
+from django.db import IntegrityError
 # Create your views here.
 
 # ----- TOUR -----
@@ -119,4 +124,141 @@ def concert_setlist(request, pk):
     concert = get_object_or_404(Concert, pk=pk)
     entries = SetlistEntry.objects.filter(concert=concert).order_by('position')
     return render(request, 'conciertos/setlistentry_list.html', {'setlist_entries': entries, 'concert': concert})
+
+
+@staff_member_required
+def setlist_entry_add(request, concert_pk):
+    """Staff-only view to add a SetlistEntry to a concert."""
+    concert = get_object_or_404(Concert, pk=concert_pk)
+    # compute suggested next position (max position + 1)
+    max_pos = SetlistEntry.objects.filter(concert=concert).aggregate(Max('position'))['position__max'] or 0
+    suggested_position = max_pos + 1
+    if request.method == 'POST':
+        form = SetlistEntryForm(request.POST, concert=concert)
+        if form.is_valid():
+            entry = form.save(commit=False)
+            entry.concert = concert
+            try:
+                entry.save()
+            except IntegrityError as err:
+                # Determine whether the conflict is due to duplicate song or duplicate position
+                # by checking existing rows in the DB rather than parsing DB-specific messages.
+                conflict_song_qs = SetlistEntry.objects.filter(concert=concert, song=entry.song)
+                conflict_pos_qs = SetlistEntry.objects.filter(concert=concert, position=entry.position)
+                # exclude self (not needed for add but harmless)
+                if entry.pk:
+                    conflict_song_qs = conflict_song_qs.exclude(pk=entry.pk)
+                    conflict_pos_qs = conflict_pos_qs.exclude(pk=entry.pk)
+
+                if conflict_song_qs.exists():
+                    form.add_error('song', 'La canción ya está en el setlist para este concierto.')
+                elif conflict_pos_qs.exists():
+                    form.add_error('position', 'Ya existe una canción en esa posición para este concierto.')
+                else:
+                    # Fallback generic error
+                    form.add_error(None, 'Error al guardar la entrada del setlist.')
+                artists = Artist.objects.order_by('name')
+                return render(request, 'conciertos/setlistentry_form.html', {'form': form, 'concert': concert, 'artists': artists, 'suggested_position': suggested_position})
+            return redirect('concert_setlist', pk=concert.pk)
+    else:
+        form = SetlistEntryForm(concert=concert, initial={'position': suggested_position})
+    artists = Artist.objects.order_by('name')
+    return render(request, 'conciertos/setlistentry_form.html', {'form': form, 'concert': concert, 'artists': artists, 'suggested_position': suggested_position})
+
+
+@staff_member_required
+def setlist_entry_edit(request, pk):
+    """Staff-only view to edit an existing SetlistEntry."""
+    entry = get_object_or_404(SetlistEntry, pk=pk)
+    concert = entry.concert
+    if request.method == 'POST':
+        form = SetlistEntryForm(request.POST, instance=entry, concert=concert)
+        if form.is_valid():
+            try:
+                form.save()
+            except IntegrityError as err:
+                # determine conflict type by checking existing rows
+                inst = form.instance
+                conflict_song_qs = SetlistEntry.objects.filter(concert=concert, song=inst.song).exclude(pk=inst.pk)
+                conflict_pos_qs = SetlistEntry.objects.filter(concert=concert, position=inst.position).exclude(pk=inst.pk)
+                if conflict_song_qs.exists():
+                    form.add_error('song', 'La canción ya está en el setlist para este concierto.')
+                elif conflict_pos_qs.exists():
+                    form.add_error('position', 'Ya existe una canción en esa posición para este concierto.')
+                else:
+                    form.add_error(None, 'Error al guardar la entrada del setlist.')
+                artists = Artist.objects.order_by('name')
+                # compute suggested next position for display (useful when editing)
+                max_pos = SetlistEntry.objects.filter(concert=concert).aggregate(Max('position'))['position__max'] or 0
+                suggested_position = max_pos + 1
+                return render(request, 'conciertos/setlistentry_form.html', {'form': form, 'concert': concert, 'entry': entry, 'artists': artists, 'suggested_position': suggested_position})
+            return redirect('concert_setlist', pk=concert.pk)
+    else:
+        form = SetlistEntryForm(instance=entry, concert=concert)
+    artists = Artist.objects.order_by('name')
+    # compute suggested position for display when editing
+    max_pos = SetlistEntry.objects.filter(concert=concert).aggregate(Max('position'))['position__max'] or 0
+    suggested_position = max_pos + 1
+    return render(request, 'conciertos/setlistentry_form.html', {'form': form, 'concert': concert, 'entry': entry, 'artists': artists, 'suggested_position': suggested_position})
+
+
+@staff_member_required
+@require_http_methods(['POST'])
+def setlist_entry_delete(request, pk):
+    """Staff-only deletion of a setlist entry (POST only)."""
+    entry = get_object_or_404(SetlistEntry, pk=pk)
+    concert_pk = entry.concert.pk
+    entry.delete()
+    return redirect('concert_setlist', pk=concert_pk)
+
+
+@staff_member_required
+@require_http_methods(['POST'])
+def song_create_ajax(request):
+    """AJAX endpoint to create a Song from the setlist form.
+
+    Expects POST with 'title' (required), optional 'original_artist' and 'release_year'.
+    Returns JSON with the created song id and title.
+    """
+    title = request.POST.get('title', '').strip()
+    original_artist = request.POST.get('original_artist', '').strip()
+    release_year = request.POST.get('release_year', '').strip()
+
+    errors = {}
+    if not title:
+        errors['title'] = 'El título es obligatorio.'
+
+    # Validate release_year if provided
+    if release_year:
+        try:
+            release_year_int = int(release_year)
+            if release_year_int < 0:
+                raise ValueError()
+        except ValueError:
+            errors['release_year'] = 'Año inválido.'
+    else:
+        release_year_int = None
+
+    if errors:
+        return JsonResponse({'success': False, 'errors': errors}, status=400)
+
+    # Try to resolve original_artist to an Artist instance by exact name; if not found,
+    # store the provided name in `original_artist_name` (we don't create new Artist rows).
+    artist_obj = None
+    artist_name_to_store = None
+    if original_artist:
+        try:
+            artist_obj = Artist.objects.get(name__iexact=original_artist)
+        except Artist.DoesNotExist:
+            artist_obj = None
+            artist_name_to_store = original_artist
+
+    song = Song.objects.create(
+        title=title,
+        original_artist=artist_obj,
+        original_artist_name=artist_name_to_store,
+        release_year=release_year_int,
+    )
+
+    return JsonResponse({'success': True, 'song': {'id': song.pk, 'title': song.title}})
 
