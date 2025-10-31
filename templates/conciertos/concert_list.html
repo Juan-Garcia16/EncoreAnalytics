@@ -100,7 +100,12 @@
               <span class="text-xs font-semibold px-2 py-1 rounded-full bg-blue-500 text-white">Programado</span>
             {% elif concert.status == 'completed' %}
               <span class="text-xs font-semibold px-2 py-1 rounded-full bg-green-500 text-white">Realizado</span>
+              {% if concert.total_income %}
               <p class="text-green-500 text-base font-normal leading-normal"> Ventas: ${{ concert.total_income }}</p>
+              {% else %}
+              <p class="text-green-500 text-base font-normal leading-normal"> Ventas: sin registrar</p>
+              {% endif %}
+
             {% elif concert.status == 'canceled' %}
               <span class="text-xs font-semibold px-2 py-1 rounded-full bg-red-500 text-white">Cancelado</span>
             {% else %}

@@ -39,6 +39,13 @@ class TourForm(forms.ModelForm):
             'total_income': forms.NumberInput(attrs={'class': 'form-input h-14 w-full rounded-lg bg-[#232f48] p-4 text-white'}),
         }
 
+    # enforce non-negative incomes at the form level as well
+    total_income = forms.DecimalField(
+        required=False,
+        min_value=0,
+        widget=forms.NumberInput(attrs={'class': 'form-input h-14 w-full rounded-lg bg-[#232f48] p-4 text-white'})
+    )
+
     def clean(self):
         cleaned = super().clean()
         start = cleaned.get('start_date')
@@ -125,6 +132,7 @@ class ConcertForm(forms.ModelForm):
 
     total_income = forms.DecimalField(
         required=False,
+        min_value=0,
         widget=forms.NumberInput(attrs={
             'class': 'form-input h-14 w-full flex-1 rounded-lg border-none bg-[#232f48] p-4 text-base text-white placeholder:text-[#92a4c9] focus:ring-2 focus:ring-primary'
         })

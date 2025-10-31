@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 from core.models import Artist, Venue
 
 # Create your models here.
@@ -8,7 +9,8 @@ class Tour(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=[('planned','Planned'),('ongoing','Ongoing'),('finished','Finished')], default='planned')
-    total_income = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    total_income = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True,
+                                       validators=[MinValueValidator(0)])
 
     def __str__(self):
         return f"{self.name} - {self.artist.name}"
@@ -19,7 +21,8 @@ class Concert(models.Model):
     tour = models.ForeignKey(Tour, on_delete=models.SET_NULL, null=True, blank=True, related_name='concerts') # gira asociada (puede estar vacío, si se elimina la gira, el campo queda nulo).
     start_datetime = models.DateTimeField()
     status = models.CharField(max_length=20, choices=[('scheduled','Programado'),('completed','Realizado'),('canceled','Cancelado')], default='scheduled')
-    total_income = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    total_income = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True,
+                                       validators=[MinValueValidator(0)])
     img = models.URLField(null=True, blank=True)  # URL de la imagen promocional del concierto
     
     def __str__(self):
