@@ -1,28 +1,85 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseNotAllowed
-from django.views.generic import ListView, CreateView, UpdateView
+from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from django.urls import reverse_lazy
 from .models import Tour, Concert, Song, SetlistEntry
+from django.utils.decorators import method_decorator
 from core.models import Artist
-from .forms import ConcertForm, SetlistEntryForm
+from .forms import ConcertForm, SetlistEntryForm, TourForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 from django.db.models import Q, Max
 from django.db import IntegrityError
-# Create your views here.
-
 # ----- TOUR -----
 class TourListView(ListView):
     model = Tour
     template_name = 'conciertos/tour_list.html'
     context_object_name = 'tours'
+    queryset = Tour.objects.all().order_by('start_date')
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        q = self.request.GET.get('query', '').strip()
+        status = self.request.GET.get('status', '').strip()
+        # Filter by artist name if a query is provided
+        if q:
+            # search by artist name OR tour name (case-insensitive contains)
+            qs = qs.filter(
+                Q(artist__name__icontains=q) | Q(name__icontains=q)
+            )
+        if status:
+            qs = qs.filter(status=status)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        status_field = Tour._meta.get_field('status')
+        context['status_choices'] = status_field.choices
+        context['selected_status'] = self.request.GET.get('status', '')
+        context['selected_query'] = self.request.GET.get('query', '').strip()
+        # compute placeholders so the grid keeps consistent columns on larger viewports
+        total = context.get('object_list').count() if context.get('object_list') is not None else 0
+        # number of columns on large screens is 3; compute how many empty slots to add
+        remainder = total % 3
+        placeholder_count = (3 - remainder) % 3
+        context['placeholders'] = list(range(placeholder_count))
+        return context
+
+
+@method_decorator(staff_member_required, name='dispatch')
 class TourCreateView(CreateView):
     model = Tour
-    fields = ['artist', 'name', 'start_date', 'end_date', 'status', 'total_income']
+    form_class = TourForm
     template_name = 'conciertos/tour_form.html'
     success_url = reverse_lazy('tour_list')
+
+
+class TourDetailView(DetailView):
+    model = Tour
+    template_name = 'conciertos/tour_detail.html'
+    context_object_name = 'tour'
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class TourUpdateView(UpdateView):
+    model = Tour
+    form_class = TourForm
+    template_name = 'conciertos/tour_form.html'
+    success_url = reverse_lazy('tour_list')
+
+
+def tour_delete(request, pk):
+    """Delete a tour. POST only."""
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    tour = get_object_or_404(Tour, pk=pk)
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect('tour_list')
+    tour.delete()
+    return redirect('tour_list')
+    tour.delete()
+    return redirect('tour_list')
 
 # ----- CONCERT -----
 class ConcertListView(ListView):

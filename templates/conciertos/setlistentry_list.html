@@ -53,8 +53,12 @@
     </div>
   {% else %}
     <div class="bg-[#0f1724] border border-dashed border-[#243048] rounded-lg p-6 text-center">
+    {% if user.is_staff %}
       <p class="text-[#92a4c9]">No hay canciones en el setlist todavía. Usa "Agregar entrada" para comenzar.</p>
+    {% else %}
+      <p class="text-[#92a4c9]">No hay canciones en el setlist todavía.</p>
     </div>
+    {% endif %}
   {% endif %}
   <div class="mt-6">
     <a href="{% url 'concert_list' %}" class="text-primary hover:underline">Volver a Conciertos</a>

@@ -5,6 +5,79 @@ from core.models import Artist, Venue
 from .models import SetlistEntry, Song
 
 
+class TourForm(forms.ModelForm):
+    artist = forms.ModelChoiceField(
+        queryset=Artist.objects.order_by('name'),
+        required=True,
+        widget=forms.Select(attrs={
+            'class': 'form-input h-14 w-full rounded-lg bg-[#232f48] p-4 text-white'
+        })
+    )
+
+    start_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'form-input h-14 w-full rounded-lg bg-[#232f48] p-4 text-white'
+        })
+    )
+
+    end_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'form-input h-14 w-full rounded-lg bg-[#232f48] p-4 text-white'
+        })
+    )
+
+    class Meta:
+        model = Tour
+        fields = ['artist', 'name', 'start_date', 'end_date', 'status', 'total_income']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-input h-14 w-full rounded-lg bg-[#232f48] p-4 text-white'}),
+            'status': forms.Select(attrs={'class': 'form-input h-14 w-full rounded-lg bg-[#232f48] p-4 text-white'}),
+            'total_income': forms.NumberInput(attrs={'class': 'form-input h-14 w-full rounded-lg bg-[#232f48] p-4 text-white'}),
+        }
+
+    def clean(self):
+        cleaned = super().clean()
+        start = cleaned.get('start_date')
+        end = cleaned.get('end_date')
+        status = cleaned.get('status')
+        today = timezone.now().date()
+
+        # If both dates provided, ensure end >= start
+        if start and end:
+            if end < start:
+                self.add_error('end_date', forms.ValidationError('La fecha de finalización no puede ser anterior a la fecha de inicio.'))
+
+            # Now check coherence of status with the date interval
+            if end < today:
+                # entire tour elapsed
+                if status != 'finished':
+                    self.add_error('status', forms.ValidationError('La gira finalizó en el pasado, el estado debería ser "Finalizada".'))
+            elif start > today:
+                # tour entirely in future
+                if status != 'planned':
+                    self.add_error('status', forms.ValidationError('La gira comienza en el futuro, el estado debería ser "Planificada".'))
+            else:
+                # today is within [start, end]
+                if status != 'ongoing':
+                    self.add_error('status', forms.ValidationError('La gira está en curso según las fechas, el estado debería ser "En curso".'))
+
+        # If only start provided, check plausible statuses
+        elif start and not end:
+            if start > today and status and status != 'planned':
+                self.add_error('status', forms.ValidationError('La gira comienza en el futuro; use el estado "Planificada".'))
+
+        # If only end provided, check plausible statuses
+        elif end and not start:
+            if end < today and status and status != 'finished':
+                self.add_error('status', forms.ValidationError('La fecha de finalización es pasada; el estado debería ser "Finalizada".'))
+
+        return cleaned
+
+
 class ConcertForm(forms.ModelForm):
     """Formulario para crear/editar Concert con estilo similar al form de Artista.
 

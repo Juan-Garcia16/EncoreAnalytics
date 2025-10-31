@@ -147,11 +147,6 @@
           class="w-64 bg-sidebar p-6 flex flex-col gap-8 md:sticky md:top-16 md:max-h-[calc(100vh-4rem)] md:overflow-y-auto bg-surface-dark/10"
         >
           <nav class="flex flex-col gap-2">
-            <p
-              class="text-[#92a4c9] text-xs font-semibold uppercase tracking-wider px-4 mb-2"
-            >
-              Principal
-            </p>
             <a
               href="{% url 'dashboard' %}"
               class="flex items-center gap-3 px-4 py-2 rounded-lg text-white transition-colors 
@@ -187,12 +182,16 @@
                   hover:bg-primary/10
               {% endif %}"
               ><span class="material-symbols-outlined">calendar_today</span
-              >Conciertos</a
-            ><a
-              class="flex items-center gap-3 px-4 py-2 rounded-lg text-white hover:bg-primary/10 transition-colors"
-              href="#"
-              ><span class="material-symbols-outlined">map</span>Giras</a
-            >
+              >Conciertos</a>
+              <a
+              href="{% url 'tour_list' %}"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-white transition-colors 
+              {% if request.resolver_match.url_name == 'tour_list' %}
+                  bg-primary/20 hover:bg-primary/30
+              {% else %}
+                  hover:bg-primary/10
+              {% endif %}">
+              <span class="material-symbols-outlined">map</span>Giras</a>
             {% if request.user.is_staff %}
             <a
               href="{% url 'fan_list' %}"
