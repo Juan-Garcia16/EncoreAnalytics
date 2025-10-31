@@ -66,6 +66,15 @@
         class="w-full bg-center bg-no-repeat aspect-[16/6] bg-cover transition-transform duration-200 transform group-hover:scale-105 h-[225px]"
         style="background-image: url('{{ concert.img }}');"
       ></div>
+      {% if request.user.is_staff and concert.status == 'completed' %}
+        <div class="absolute top-3 left-3 z-20 bg-black/60 text-white px-3 py-1 rounded-full flex items-center gap-2">
+          <span class="material-symbols-outlined text-yellow-400" aria-hidden>star</span>
+          <span class="text-sm font-semibold">
+            {% if concert.avg_rating %}{{ concert.avg_rating|floatformat:1 }}{% else %}-{% endif %}
+          </span>
+          <span class="text-xs text-[#92a4c9]">({{ concert.ratings_count|default:0 }})</span>
+        </div>
+      {% endif %}
       {% if request.user.is_staff %}
         <!-- Delete button over the image (top-right of image) -->
         <form action="{% url 'concert_delete' concert.pk %}" method="post" onsubmit="return confirm('¿Eliminar este concierto? Esta acción borrará todos sus datos relacionados.');" class="absolute top-3 right-3 z-20">
