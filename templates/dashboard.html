@@ -159,6 +159,7 @@
           Entiende a tu audiencia y su comportamiento.
         </p>
       </div>
+
       <div
         class="relative flex flex-col justify-end gap-3 p-6 bg-card rounded-xl shadow-subtle hover:bg-card/90 cursor-pointer col-span-1 sm:col-span-2 md:col-span-1 lg:col-span-2 min-h-[220px] overflow-hidden transform transition duration-300 ease-out hover:scale-105 hover:-translate-y-1 hover:shadow-card-glow hover:ring-1 hover:ring-white/10"
       >
@@ -171,7 +172,11 @@
         <div
           class="absolute inset-0 bg-gradient-to-t from-black/100 to-transparent"
         ></div>
-        <div class="relative z-10 flex items-center gap-3">
+      
+        <!-- clickable layer: full-card anchor placed behind content -->
+        <a href="{% url 'analytics_dashboard' %}" class="absolute inset-0 z-0" aria-label="Reportes"></a>
+
+          <div class="relative z-10 flex items-center gap-3">
           <div class="text-primary">
             <span class="material-symbols-outlined" style="font-size: 36px"
               >bar_chart</span
@@ -181,12 +186,15 @@
             <p class="text-white text-lg font-bold leading-normal">Reportes</p>
           </div>
         </div>
+
+       
         <p
           class="text-[#92a4c9] text-sm font-normal leading-normal relative z-10"
         >
           Genera informes detallados y visualizaciones.
         </p>
       </div>
+
     </div>
   </div>
     <!-- Additional dashboard content: quick metrics and upcoming concerts -->

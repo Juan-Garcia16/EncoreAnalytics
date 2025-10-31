@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="p-8">
+    <h1 class="text-2xl font-bold mb-6">Reportes y Análisis</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6 px-10">
+      <div class="bg-surface-dark/80 rounded-lg p-4 shadow-subtle">
+        <h2 class="text-white font-semibold mb-2">Top canciones</h2>
+        <div class="h-64"><canvas id="chart-songs" class="w-full h-full"></canvas></div>
+      </div>
+
+      <div class="bg-surface-dark/80 rounded-lg p-4 shadow-subtle">
+        <h2 class="text-white font-semibold mb-2">Conciertos por ciudad</h2>
+        <div class="h-64"><canvas id="chart-cities" class="w-full h-full"></canvas></div>
+      </div>
+
+      <div class="bg-surface-dark/80 rounded-lg p-4 shadow-subtle">
+        <h2 class="text-white font-semibold mb-2">Artistas con más conciertos</h2>
+        <div class="h-64"><canvas id="chart-artists" class="w-full h-full"></canvas></div>
+      </div>
+
+      <div class="bg-surface-dark/80 rounded-lg p-4 shadow-subtle">
+        <h2 class="text-white font-semibold mb-2">Conciertos con más interés</h2>
+        <div class="h-64"><canvas id="chart-expected" class="w-full h-full"></canvas></div>
+      </div>
+
+      <div class="bg-surface-dark/80 rounded-lg p-4 shadow-subtle">
+        <h2 class="text-white font-semibold mb-2">Promedio de calificación por artista</h2>
+        <div class="h-64"><canvas id="chart-ratings" class="w-full h-full"></canvas></div>
+      </div>
+
+      <div class="bg-surface-dark/80 rounded-lg p-4 shadow-subtle">
+        <h2 class="text-white font-semibold mb-2">Ingresos totales por artista en conciertos</h2>
+        <div class="h-64"><canvas id="chart-income" class="w-full h-full"></canvas></div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const safeParse = (s) => { try { return JSON.parse(s); } catch (e) { return []; } };
+      const songsLabels = safeParse('{{ songs_labels|default:"[]"|escapejs }}');
+      const songsData = safeParse('{{ songs_data|default:"[]"|escapejs }}');
+      const cityLabels = safeParse('{{ city_labels|default:"[]"|escapejs }}');
+      const cityData = safeParse('{{ city_data|default:"[]"|escapejs }}');
+      const artistLabels = safeParse('{{ artist_labels|default:"[]"|escapejs }}');
+      const artistData = safeParse('{{ artist_data|default:"[]"|escapejs }}');
+      const expectedLabels = safeParse('{{ expected_labels|default:"[]"|escapejs }}');
+      const expectedData = safeParse('{{ expected_data|default:"[]"|escapejs }}');
+      const ratingsLabels = safeParse('{{ ratings_labels|default:"[]"|escapejs }}');
+      const ratingsData = safeParse('{{ ratings_data|default:"[]"|escapejs }}');
+      const incomeLabels = safeParse('{{ income_labels|default:"[]"|escapejs }}');
+      const incomeData = safeParse('{{ income_data|default:"[]"|escapejs }}');
+
+  // Paleta revisada: tonos azules y púrpuras más contrastados, income en cian para distinguir
+  const palette = {
+    songs: '#1e3a8a',   // azul oscuro
+    cities: '#3b82f6',  // azul medio (más claro)
+    artists: '#7c3aed', // púrpura
+    expected: '#4f46e5',// indigo/purple
+    ratings: '#6366f1', // indigo claro
+    income: '#06b6d4'   // cian/teal para destacar frente a los azules
+  };
+  const baseOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#cbd5e1' }, grid: { display: false } }, y: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,0.04)' } } } };
+
+      window._charts = window._charts || {};
+      function createBar(id, labels, data, color, yOptions = {}){
+        const el = document.getElementById(id);
+        if(!el) return;
+        if(window._charts[id]){
+          try{ window._charts[id].destroy(); }catch(e){}
+          window._charts[id]=null;
+        }
+
+        // Compose options from baseOptions and yOptions
+        const opts = JSON.parse(JSON.stringify(baseOptions)); // shallow clone
+        opts.scales = opts.scales || {};
+        opts.scales.y = opts.scales.y || {};
+        opts.scales.y.beginAtZero = true;
+
+        // ticks formatting
+        opts.scales.y.ticks = opts.scales.y.ticks || {};
+        if (yOptions.integer) {
+          opts.scales.y.ticks.stepSize = 1;
+          opts.scales.y.ticks.callback = function(value){ return Number(value).toString(); };
+        } else if (typeof yOptions.precision === 'number') {
+          const p = yOptions.precision;
+          opts.scales.y.ticks.callback = function(value){ return Number(value).toFixed(p); };
+        }
+
+        window._charts[id]= new Chart(el.getContext('2d'), {
+          type:'bar',
+          data:{ labels: labels, datasets:[{ data: data, backgroundColor: color, borderColor: color, borderWidth:1 }] },
+          options: opts
+        });
+      }
+
+      // Counts should show integer ticks
+      if(songsLabels.length && songsData.length) createBar('chart-songs', songsLabels, songsData, palette.songs, { integer: true });
+      if(cityLabels.length && cityData.length) createBar('chart-cities', cityLabels, cityData, palette.cities, { integer: true });
+      if(artistLabels.length && artistData.length) createBar('chart-artists', artistLabels, artistData, palette.artists, { integer: true });
+      if(expectedLabels.length && expectedData.length) createBar('chart-expected', expectedLabels, expectedData, palette.expected, { integer: true });
+      // Ratings should be floats (1 decimal)
+      if(ratingsLabels.length && ratingsData.length) createBar('chart-ratings', ratingsLabels, ratingsData, palette.ratings, { precision: 1 });
+      // Income remains default (floats as provided)
+      if(incomeLabels.length && incomeData.length) createBar('chart-income', incomeLabels, incomeData, palette.income);
+    });
+  </script>
+{% endblock %}
