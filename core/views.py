@@ -9,7 +9,7 @@ from .genres import get_genres
 from django.db.models import Q
 from django.utils import timezone
 from conciertos.models import Concert
-from fans.models import Fan
+from fans.models import Fan, Interest
 
 # Create your views here.
 def HomeView(request):
@@ -92,6 +92,11 @@ def dashboard(request):
         'concerts_count': concerts_count,
         'fans_count': fans_count,
         'upcoming_concerts': upcoming_concerts,
+        # últimas expresiones de interés (fans interesados en conciertos)
+        'recent_interests': (
+            Interest.objects.select_related('fan', 'concert', 'concert__artist', 'concert__venue')
+            .order_by('-created_at')[:3]
+        ),
     }
     return render(request, 'dashboard.html', context)
     

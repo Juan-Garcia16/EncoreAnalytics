@@ -245,9 +245,9 @@
               <p class="text-white font-bold">{{ c.artist.name }} — {{ c.venue.name }}</p>
               <p class="text-[#92a4c9] text-sm">{{ c.start_datetime|date:"d" }} de {{ c.start_datetime|date:"F, Y - H:i" }}</p>
             </div>
-            <div class="flex items-center gap-3">
+            <!-- <div class="flex items-center gap-3">
               <a href="{{ c.get_absolute_url|default:'#' }}" class="px-3 py-1 rounded bg-primary text-sm text-white">Detalles</a>
-            </div>
+            </div> -->
           </li>
           {% endfor %}
         </ul>
@@ -258,26 +258,29 @@
 
       <div class="p-6 bg-card rounded-xl shadow-subtle">
         <h3 class="text-white text-lg font-bold mb-3">Actividad reciente</h3>
-        <p class="text-[#92a4c9] text-sm">Aquí aparecerán eventos recientes, inscripciones de fans y acciones relevantes.</p>
-        <div class="mt-4 space-y-3">
-          <div class="flex items-start gap-3">
-            <div class="text-primary bg-white/5 rounded-full w-8 h-8 flex items-center justify-center">
-              <span class="material-symbols-outlined" style="font-size:16px">person_add</span>
-            </div>
-            <div>
-              <p class="text-white text-sm font-bold">Nuevo fan registrado</p>
-              <p class="text-[#92a4c9] text-xs">Hace 2 horas</p>
-            </div>
-          </div>
-          <div class="flex items-start gap-3">
-            <div class="text-primary bg-white/5 rounded-full w-8 h-8 flex items-center justify-center">
-              <span class="material-symbols-outlined" style="font-size:16px">event</span>
-            </div>
-            <div>
-              <p class="text-white text-sm font-bold">Concierto agregado</p>
-              <p class="text-[#92a4c9] text-xs">Hace 1 día</p>
-            </div>
-          </div>
+        <p class="text-[#92a4c9] text-sm">Últimas interacciones de fans con conciertos (interés/inscripción).</p>
+        <div class="mt-4">
+          {% if recent_interests %}
+          <ul class="space-y-3">
+            {% for it in recent_interests %}
+            <li class="flex items-center justify-between bg-[#0f1724] rounded-md p-3">
+              <div>
+                <p class="text-white font-bold">{{ it.fan.full_name }} — {{ it.concert.artist.name }} @ {{ it.concert.venue.name }}</p>
+                <p class="text-[#92a4c9] text-sm">{{ it.created_at|date:"d M, Y - H:i" }}</p>
+              </div>
+              <div class="text-sm text-primary">
+                {% if it.concert.start_datetime %}
+                {{ it.concert.start_datetime|date:"d M" }}
+                {% else %}
+                —
+                {% endif %}
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="text-[#92a4c9]">No hay actividad reciente.</p>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -319,7 +322,7 @@
       </div>
 
       <div class="mt-6 text-sm md:text-base justify-center text-center text-balance">
-        <p class="text-[#92a4c9]">Dato curioso: al agregar y analizar datos de múltiples eventos, es posible identificar patrones estacionales y ajustar la programación para maximizar asistencia.</p>
+        <p class="text-[#92a4c9]">Al agregar y analizar datos de múltiples eventos, es posible identificar patrones estacionales y ajustar la programación para maximizar asistencia.</p>
         <p class="text-[#92a4c9] mt-2">Más detalles y guía de uso en el <a href="/README.md" class="text-white underline">README.md</a> del proyecto.</p>
       </div>
     </div>
