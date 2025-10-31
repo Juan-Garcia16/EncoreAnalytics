@@ -13,11 +13,14 @@ from core.models import City
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.contrib.admin.views.decorators import staff_member_required
 from conciertos.models import Concert
 from .models import Interest
 # Create your views here.
 
 # ----- FAN -----
+@method_decorator(staff_member_required, name='dispatch')
 class FanListView(ListView):
     model = Fan
     template_name = 'fans/fan_list.html'
