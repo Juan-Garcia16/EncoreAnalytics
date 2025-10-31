@@ -11,8 +11,8 @@ class City(models.Model):
 class Artist(models.Model):
     name = models.CharField(max_length=200)
     country = models.CharField(max_length=120)
-    debut_year = models.PositiveSmallIntegerField(null=True, blank=True)
-    genre = models.CharField(max_length=120, blank=True)
+    debut_year = models.PositiveSmallIntegerField(null=True)
+    genre = models.CharField(max_length=120)
 
     def __str__(self):
         return self.name

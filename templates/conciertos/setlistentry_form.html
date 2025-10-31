@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% block title %}Editar entrada del setlist{% endblock %}
+{% block content %}
+<div class="p-8 min-w-[520px] max-w-[800px] mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-white text-2xl font-bold">{% if entry %}Editar{% else %}Agregar{% endif %}</h1>
+    <div class="text-sm text-[#92a4c9]">{{ concert.artist.name }} · {{ concert.venue.name }} · {{ concert.start_datetime|date:"d/m/Y" }}</div>
+  </div>
+
+  <form method="post" class="space-y-6 bg-[#081225] p-6 rounded-lg border border-[#142033]">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="bg-red-600 text-white p-3 rounded">{{ form.non_field_errors }}</div>
+    {% endif %}
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm text-[#92a4c9] mb-1">Canción</label>
+        {{ form.song }}
+        {% if form.song.errors %}
+          <p class="text-red-400 text-sm mt-1">{{ form.song.errors }}</p>
+        {% endif %}
+      </div>
+
+      <div>
+        <label class="block text-sm text-[#92a4c9] mb-1">Posición</label>
+        {{ form.position }}
+        {% if suggested_position %}
+          <p class="text-sm text-[#92a4c9] mt-1">Sugerida: <strong class="text-white">{{ suggested_position }}</strong></p>
+        {% endif %}
+        {% if form.position.errors %}
+          <p class="text-red-400 text-sm mt-1">{{ form.position.errors }}</p>
+        {% endif %}
+      </div>
+
+      <div>
+        <label class="block text-sm text-[#92a4c9] mb-1">Sección (opcional)</label>
+        {{ form.section }}
+        {% if form.section.errors %}
+          <p class="text-red-400 text-sm mt-1">{{ form.section.errors }}</p>
+        {% endif %}
+      </div>
+
+      <div class="flex items-center">
+        {{ form.is_cover }}
+        <label class="ml-2 text-sm text-[#92a4c9]">Es cover</label>
+      </div>
+    </div>
+
+    <div class="pt-4 flex items-center gap-3">
+      <button type="submit" class="px-5 py-2 bg-primary text-white rounded shadow">Guardar</button>
+      <a href="{% url 'concert_setlist' pk=concert.pk %}" class="text-[#92a4c9] hover:underline">Cancelar</a>
+    </div>
+  </form>
+
+  {% if user.is_staff %}
+    <div class="mt-6">
+      <button id="open-new-song-modal" type="button" class="px-3 py-2 bg-primary text-white rounded">Agregar nueva canción</button>
+    </div>
+
+    <!-- Modal -->
+    <div id="new-song-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+      <div class="absolute inset-0 bg-black/60" aria-hidden="true"></div>
+      <div class="relative bg-[#0f1724] rounded-lg w-full max-w-xl mx-4 p-6 z-10">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-white text-lg">Agregar nueva canción</h3>
+          <button id="close-new-song-modal" class="text-[#92a4c9]">Cerrar ✕</button>
+        </div>
+        <form id="new-song-form" class="space-y-3">
+          {% csrf_token %}
+          <div>
+            <label class="block text-sm text-[#92a4c9] mb-1">Título</label>
+            <input id="new-song-title" name="title" placeholder="Título" required
+              class="form-input h-12 w-full rounded-lg bg-[#232f48] p-3 text-white" />
+          </div>
+          <div>
+            <label class="block text-sm text-[#92a4c9] mb-1">Artista original (opcional)</label>
+            <input list="artist-list" id="new-song-original_artist" name="original_artist" placeholder="Escribe o selecciona un artista"
+              class="form-input h-12 w-full rounded-lg bg-[#232f48] p-3 text-white" />
+            <datalist id="artist-list">
+              {% for artist in artists %}
+                <option value="{{ artist.name }}"></option>
+              {% endfor %}
+            </datalist>
+          </div>
+          <div>
+            <label class="block text-sm text-[#92a4c9] mb-1">Año (opcional)</label>
+            <input id="new-song-release_year" name="release_year" type="number" min="0" placeholder="Año"
+              class="form-input h-12 w-full rounded-lg bg-[#232f48] p-3 text-white" />
+          </div>
+          <div class="flex items-center space-x-3">
+            <button type="submit" class="px-3 py-2 bg-primary text-white rounded">Agregar canción</button>
+            <p id="new-song-msg" class="text-sm text-green-400 hidden"></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script>
+    (function(){
+      const form = document.getElementById('new-song-form');
+      const openBtn = document.getElementById('open-new-song-modal');
+      const closeBtn = document.getElementById('close-new-song-modal');
+      const modal = document.getElementById('new-song-modal');
+      if (openBtn && modal) {
+        openBtn.addEventListener('click', () => {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+        });
+      }
+      if (closeBtn && modal) {
+        closeBtn.addEventListener('click', () => {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        });
+      }
+      if (!form) return;
+      form.addEventListener('submit', async function(e){
+        e.preventDefault();
+        const msgEl = document.getElementById('new-song-msg');
+        msgEl.classList.remove('text-red-400');
+        msgEl.classList.remove('hidden');
+        msgEl.textContent = 'Guardando...';
+
+        const url = "{% url 'song_create_ajax' %}";
+        const csrfInput = form.querySelector('input[name="csrfmiddlewaretoken"]');
+        const csrf = csrfInput ? csrfInput.value : null;
+        const data = new FormData(form);
+
+        try {
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: csrf ? { 'X-CSRFToken': csrf } : {},
+            body: data
+          });
+          if (res.ok) {
+            const json = await res.json();
+            const select = document.getElementById('id_song');
+            if (select) {
+              const opt = new Option(json.song.title, json.song.id);
+              select.add(opt);
+              select.value = json.song.id;
+            }
+            msgEl.textContent = 'Canción agregada.';
+            msgEl.classList.remove('text-red-400');
+            msgEl.classList.add('text-green-400');
+            setTimeout(()=>{ msgEl.classList.add('hidden'); }, 1500);
+            form.reset();
+            // close modal
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+          } else {
+            const j = await res.json().catch(()=>({}));
+            const err = (j.errors && (j.errors.title || Object.values(j.errors).join(', '))) || 'Error al crear la canción.';
+            msgEl.textContent = err;
+            msgEl.classList.remove('text-green-400');
+            msgEl.classList.add('text-red-400');
+          }
+        } catch (err) {
+          msgEl.textContent = 'Error de red.';
+          msgEl.classList.remove('text-green-400');
+          msgEl.classList.add('text-red-400');
+        }
+      });
+      // close when clicking overlay
+      const overlay = modal ? modal.querySelector('.absolute.inset-0') : null;
+      if (overlay) overlay.addEventListener('click', ()=>{ modal.classList.add('hidden'); modal.classList.remove('flex'); });
+    })();
+  </script>
+{% endblock %}

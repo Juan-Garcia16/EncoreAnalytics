@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}{{ tour.name }} - Gira{% endblock %}
+{% block content %}
+<div class="p-8 max-w-5xl mx-auto">
+  <div class="bg-[#0b1220] p-6 rounded-lg border border-[#142033] shadow-sm">
+    <div class="md:flex md:items-start md:justify-between gap-6">
+      <div class="md:flex-1">
+        <h1 class="text-white text-2xl font-bold">{{ tour.name }}</h1>
+        <div class="text-sm text-[#92a4c9] mt-1">{{ tour.artist.name }}</div>
+        <div class="text-xs text-[#94a3b8] mt-2">{{ tour.start_date|date:"d M Y" }} — {{ tour.end_date|date:"d M Y" }}</div>
+      </div>
+
+      <div class="mt-4 md:mt-0 md:w-56 flex flex-col items-start md:items-end gap-3">
+        {% if tour.status == 'planned' %}
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-600 text-black">Planificada</span>
+        {% elif tour.status == 'ongoing' %}
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-600 text-white">En curso</span>
+        {% else %}
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-slate-600 text-white">Finalizada</span>
+        {% endif %}
+
+        <div class="text-sm text-[#92a4c9]">Conciertos: {{ tour.concerts.count }}</div>
+        <div class="text-sm text-[#92a4c9]">Ingresos: {% if tour.total_income %}{{ tour.total_income }}{% else %}-{% endif %}</div>
+      </div>
+    </div>
+
+    {% if tour.concerts.exists %}
+      <div class="mt-6 border-t border-[#1f2a44] pt-4">
+        <h3 class="text-sm text-[#92a4c9] mb-2">Conciertos incluidos</h3>
+        <ul class="space-y-2">
+          {% for concert in tour.concerts.all|slice:":6" %}
+            <li class="flex items-center justify-between bg-[#071322] p-3 rounded border border-[#122235]">
+              <div>
+                <div class="text-sm text-white">{{ concert.artist.name }} — {{ concert.venue.name }}</div>
+                <div class="text-xs text-[#92a4c9]">{{ concert.start_datetime|date:"d M Y H:i" }}</div>
+              </div>
+              <div class="text-xs text-[#92a4c9]">{{ concert.get_status_display }}</div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <div class="mt-6 flex items-center gap-3">
+      {% if request.user.is_staff %}
+        <a href="{% url 'tour_edit' pk=tour.pk %}" class="inline-flex items-center gap-2 px-4 py-2 bg-[#1b2a44] text-[#92a4c9] rounded"> <span class="material-symbols-outlined">edit</span>Editar</a>
+        <form method="post" action="{% url 'tour_delete' pk=tour.pk %}" onsubmit="return confirm('¿Eliminar esta gira? Esta acción no se puede deshacer.');">
+          {% csrf_token %}
+          <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-transparent text-red-400 rounded"> <span class="material-symbols-outlined">delete</span>Borrar</button>
+        </form>
+      {% endif %}
+      <a href="{% url 'tour_list' %}" class="text-primary hover:underline">Volver a Giras</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

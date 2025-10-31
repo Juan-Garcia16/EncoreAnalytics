@@ -20,13 +20,17 @@ class Concert(models.Model):
     start_datetime = models.DateTimeField()
     status = models.CharField(max_length=20, choices=[('scheduled','Programado'),('completed','Realizado'),('canceled','Cancelado')], default='scheduled')
     total_income = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    img = models.URLField(null=True, blank=True)  # URL de la imagen promocional del concierto
     
     def __str__(self):
         return f"{self.artist.name} @ {self.venue.name} - {self.start_datetime.date()}"
     
 class Song(models.Model):
     title = models.CharField(max_length=300)
+    # Keep FK to Artist when the original artist exists in DB; otherwise store free-text name in
+    # `original_artist_name`. This lets users enter arbitrary artist names without creating Artist rows.
     original_artist = models.ForeignKey(Artist, on_delete=models.SET_NULL, null=True, blank=True)
+    original_artist_name = models.CharField(max_length=200, null=True, blank=True)
     release_year = models.PositiveSmallIntegerField(null=True, blank=True)
 
     def __str__(self):
@@ -41,6 +45,10 @@ class SetlistEntry(models.Model):
     
     class Meta:
         unique_together = ('concert', 'position') #asegura que no haya dos canciones en la misma posicion en un concierto
+        # Añadir restricción para que una misma canción no aparezca dos veces en el mismo concierto
+        constraints = [
+            models.UniqueConstraint(fields=['concert', 'song'], name='unique_concert_song')
+        ]
         ordering = ['position']
         
     def __str__(self):

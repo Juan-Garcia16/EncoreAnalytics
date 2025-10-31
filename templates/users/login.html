@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Iniciar Sesión - EncoreAnalytics</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#3A8DFF",
+              "background-light": "#f6f6f8",
+              "background-dark": "#1A1A1A",
+              "form-background-dark": "#2C2C2C",
+            },
+            fontFamily: {
+              display: ["Manrope", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "0.75rem",
+              xl: "1rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .form-input {
+        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: #3a8dff;
+        /* No box-shadow here to avoid duplicate shadows when using wrapper */
+      }
+      /* Cuando el contenedor del password tiene foco, aplicamos el mismo estilo al botón de visibility */
+      /* No usar sombra: simplemente cambiar color del borde para que coincida con el input de correo */
+      .password-wrapper:focus-within {
+        box-shadow: none;
+      }
+
+      .password-wrapper:focus-within .form-input {
+        border-color: #3a8dff;
+      }
+
+      .password-wrapper:focus-within .password-toggle {
+        border-color: #3a8dff;
+      }
+
+      /* Quitar borde izquierdo del toggle para que no se vea en medio del input */
+      .password-toggle {
+        border-left: 0 !important;
+        /* remove any inner shadow so it blends with the input */
+        box-shadow: none !important;
+        background-clip: padding-box;
+      }
+
+      /* Alinear radios: el input tendrá las esquinas izquierdas redondeadas y el toggle las derechas */
+      .password-wrapper .form-input {
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+        border-top-left-radius: 0.75rem !important; /* keep large rounding similar to rounded-lg */
+        border-bottom-left-radius: 0.75rem !important;
+      }
+
+      .password-wrapper .password-toggle {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        border-top-right-radius: 0.75rem !important;
+        border-bottom-right-radius: 0.75rem !important;
+      }
+    </style>
+  </head>
+  <body class="bg-background-light dark:bg-background-dark font-display">
+    <div
+      class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden"
+      style="font-family: Manrope, 'Noto Sans', sans-serif"
+    >
+      <div class="layout-container flex h-full grow flex-col">
+        <div class="px-4 flex flex-1 justify-center items-center py-5">
+          <div
+            class="layout-content-container flex flex-col max-w-[480px] w-full flex-1 bg-background-light dark:bg-form-background-dark p-8 md:p-10 rounded-xl shadow-lg"
+          >
+            <div class="flex flex-col items-center justify-center mb-6">
+              <a href="{% url 'dashboard' %}" class="flex flex-col items-center no-underline">
+                <div
+                  class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4"
+                >
+                  <span class="material-symbols-outlined text-white text-4xl">
+                    bar_chart
+                  </span>
+                </div>
+                <div class="text-center">
+                  <p
+                    class="text-white text-3xl font-bold leading-tight tracking-tight"
+                  >
+                    EncoreAnalytics
+                  </p>
+                  <p
+                    class="text-gray-400 text-base font-normal leading-normal mt-2"
+                  >
+                    Analiza tu música. Conecta con tus fans.
+                  </p>
+                </div>
+              </a>
+            </div>
+            <form method="post" action="{% url 'login' %}" class="flex flex-col gap-4">
+              {% csrf_token %}
+              {% if messages %}
+                <div class="space-y-1">
+                  {% for message in messages %}
+                    <div class="rounded p-2 text-sm text-red-100 bg-red-800/60">{{ message }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+              <label class="flex flex-col">
+                <p class="text-white text-sm font-medium leading-normal pb-2">
+                  Nombre de usuario o correo
+                </p>
+                <input
+                  name="email"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border border-gray-700 bg-[#1f1f1f] focus:border-primary h-12 placeholder:text-gray-500 p-3 text-base font-normal leading-normal"
+                  placeholder="username o email"
+                  type="text"
+                  value="{{ request.POST.email|default:'' }}"
+                />
+              </label>
+              <label class="flex flex-col">
+                <div class="flex justify-between items-center pb-2">
+                  <p class="text-white text-sm font-medium leading-normal">
+                    Contraseña
+                  </p>
+                </div>
+                <div class="flex w-full flex-1 items-stretch rounded-lg password-wrapper">
+                  <input
+                    name="password"
+                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border border-gray-700 bg-[#1f1f1f] focus:border-primary h-12 placeholder:text-gray-500 p-3 rounded-r-none border-r-0 text-base font-normal leading-normal"
+                    id="password-input"
+                    placeholder="••••••••"
+                    type="password"
+                    value=""
+                  />
+                  <button
+                    type="button"
+                    aria-label="Mostrar contraseña"
+                    title="Mostrar contraseña"
+                    class="password-toggle text-gray-400 flex border border-gray-700 bg-[#1f1f1f] items-center justify-center px-3 rounded-r-lg border-l-0 hover:text-white"
+                    data-icon="Eye"
+                    data-size="24px"
+                    data-weight="regular"
+                    id="toggle-password"
+                  >
+                    <span class="material-symbols-outlined" id="eye-icon">visibility_off</span>
+                  
+                  </button>
+                </div>
+              </label>
+              <button
+                type="submit"
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 mt-4 flex-1 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-opacity-90 transition-opacity py-2"
+              >
+                <span class="truncate">Iniciar Sesión</span>
+              </button>
+            </form>
+            <div class="text-center mt-6">
+              <p class="text-gray-400 text-sm">
+                ¿No tienes una cuenta?
+                <a class="font-medium text-primary hover:underline" href="{% url 'register' %}"
+                  >Regístrate</a
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const togglePassword = document.getElementById("toggle-password");
+      const passwordInput = document.getElementById("password-input");
+      const eyeIcon = document.getElementById("eye-icon");
+
+      togglePassword.addEventListener("click", function (e) {
+        // prevent form submission
+        e.preventDefault();
+
+        // toggle the type attribute
+        const type =
+          passwordInput.getAttribute("type") === "password"
+            ? "text"
+            : "password";
+        passwordInput.setAttribute("type", type);
+
+        // toggle the eye icon (visibility = eye open when password is visible)
+        eyeIcon.textContent = type === "password" ? "visibility_off" : "visibility";
+        // actualizar aria-label/title para accesibilidad
+        const btn = document.getElementById('toggle-password');
+        if (btn) {
+          if (type === 'password') {
+            btn.setAttribute('aria-label', 'Mostrar contraseña');
+            btn.setAttribute('title', 'Mostrar contraseña');
+          } else {
+            btn.setAttribute('aria-label', 'Ocultar contraseña');
+            btn.setAttribute('title', 'Ocultar contraseña');
+          }
+        }
+      });
+      // Asegurar que al presionar Enter en el campo password se envíe el formulario
+      passwordInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const f = passwordInput.form;
+          if (f) f.submit();
+        }
+      });
+    </script>
+  </body>
+</html>

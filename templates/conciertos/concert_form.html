@@ -1,11 +1,81 @@
 {% extends 'base.html' %}
 {% block title %}Nuevo Concierto{% endblock %}
 {% block content %}
-<h2>Agregar Concierto</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Guardar</button>
-</form>
-<a href="{% url 'concert_list' %}">Volver</a>
+<div class="flex justify-center items-center py-20">
+    <div class="bg-[#192233] rounded-xl p-8 w-full max-w-md shadow-lg">
+        {% if form.instance.pk %}
+            <h2 class="text-2xl font-bold text-white mb-6">Editar Concierto</h2>
+        {% else %}
+            <h2 class="text-2xl font-bold text-white mb-6">Nuevo Concierto</h2>
+        {% endif %}
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <div>
+                <label class="block text-sm font-medium text-[#92a4c9] mb-1" for="{{ form.artist.id_for_label }}">Artista</label>
+                {{ form.artist }}
+                {% for error in form.artist.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-[#92a4c9] mb-1" for="{{ form.venue.id_for_label }}">Venue</label>
+                {{ form.venue }}
+                {% for error in form.venue.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-[#92a4c9] mb-1" for="{{ form.tour.id_for_label }}">Gira (opcional)</label>
+                {{ form.tour }}
+                {% for error in form.tour.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-[#92a4c9] mb-1" for="{{ form.start_datetime.id_for_label }}">Fecha y hora</label>
+                {{ form.start_datetime }}
+                {% for error in form.start_datetime.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-[#92a4c9] mb-1" for="{{ form.status.id_for_label }}">Estado</label>
+                {{ form.status }}
+                {% for error in form.status.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-[#92a4c9] mb-1" for="{{ form.total_income.id_for_label }}">Ingreso total (opcional)</label>
+                {{ form.total_income }}
+                {% for error in form.total_income.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-[#92a4c9] mb-1" for="{{ form.img.id_for_label }}">Imagen (URL)</label>
+                {{ form.img }}
+                {% for error in form.img.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="flex justify-center gap-4 pt-4">
+                <a href="{% url 'concert_list' %}" class="px-4 py-2 text-sm font-medium text-[#92a4c9] rounded-lg hover:bg-[#324467]">Cancelar</a>
+                <button type="submit" class="px-4 py-2 text-sm font-bold text-white bg-primary rounded-lg hover:bg-primary/80">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 {% endblock %}

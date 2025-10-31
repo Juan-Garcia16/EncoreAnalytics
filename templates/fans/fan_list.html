@@ -1,22 +1,92 @@
-{% extends 'base.html' %}
-{% block title %}Fans{% endblock %}
+{% extends 'base.html' %} {% block title %}Fans{% endblock %} 
 {% block content %}
-<h2>Fans</h2>
-<a href="{% url 'fan_add' %}" class="btn btn-primary mb-3">Agregar Fan</a>
-<table class="table table-striped">
-    <thead>
-        <tr><th>Nombre</th><th>Email</th><th>Ciudad</th></tr>
-    </thead>
-    <tbody>
-        {% for fan in fans %}
+<div class="w-full mx-auto p-8">
+  <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
+    <div class="flex flex-col gap-2">
+      <h1
+        class="text-white text-4xl font-black leading-tight tracking-[-0.033em]"
+      >
+        Fans
+      </h1>
+      <p class="text-[#92a4c9] text-base font-normal leading-normal">
+        Gestiona y organiza los fans en tu catálogo.
+      </p>
+    </div>
+    <div class="flex gap-2">
+        <div class="flex items-center gap-8 min-w-[330px] w-full">
+          <form method="get" class="w-full">
+            <label class="flex flex-col min-w-40 !h-10 w-full">
+              <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                <div
+                  class="text-[#92a4c9] flex border-none bg-[#232f48] items-center justify-center pl-4 rounded-l-lg border-r-0"
+                >
+                  <span class="material-symbols-outlined">search</span>
+                </div>
+                <input
+                  name="query_fans"
+                  value="{{ request.GET.query_fans|default_if_none:'' }}"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-[#232f48] focus:border-none h-full placeholder:text-[#92a4c9] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                  placeholder="Buscar Fans (nombre, ciudad)..."
+                />
+              </div>
+            </label>
+          </form>
+        </div>
+    </div>
+  </div>
+  <div
+    class="flex overflow-hidden rounded-xl border border-[#324467] bg-[#111722]"
+  >
+    <table class="w-full text-left">
+      <thead class="bg-[#192233]">
         <tr>
-            <td>{{ fan.full_name }}</td>
-            <td>{{ fan.email }}</td>
-            <td>{{ fan.city }}</td>
+          <th class="px-6 py-4 text-white text-sm font-medium leading-normal">
+            NOMBRE DEL FAN
+          </th>
+          <th class="px-6 py-4 text-white text-sm font-medium leading-normal">
+            EMAIL
+          </th>
+          <th class="px-6 py-4 text-white text-sm font-medium leading-normal">
+            CIUDAD
+          </th>
+          <th class="px-6 py-4 text-white text-sm font-medium leading-normal">
+            BIRTHDATE
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-[#324467]">
+        {% for fan in fans %}
+        <tr class="hover:bg-[#192233]/50 transition-colors">
+          <td class="px-6 py-4 text-white text-sm font-normal leading-normal">
+            {{ fan.full_name }}
+          </td>
+          <td
+            class="px-6 py-4 text-[#92a4c9] text-sm font-normal leading-normal"
+          >
+            {{ fan.email }}
+          </td>
+          <td
+            class="px-6 py-4 text-[#92a4c9] text-sm font-normal leading-normal"
+          >
+            {{ fan.city }}
+          </td>
+          <td
+            class="px-6 py-4 text-[#92a4c9] text-sm font-normal leading-normal"
+          >
+            {{ fan.birthdate }}
+          </td>
         </tr>
         {% empty %}
-        <tr><td colspan="3">No hay fans registrados</td></tr>
+        <tr>
+          <td
+            colspan="5"
+            class="px-6 py-4 text-white text-sm font-normal leading-normal"
+          >
+            No hay fans registrados
+          </td>
+        </tr>
         {% endfor %}
-    </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
 {% endblock %}

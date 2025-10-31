@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}{% if form.instance.pk %}Editar Gira{% else %}Nueva Gira{% endif %}{% endblock %}
+{% block content %}
+<div class="p-8 max-w-3xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-white text-2xl font-bold">{% if form.instance.pk %}Editar Gira{% else %}Nueva Gira{% endif %}</h1>
+    <div class="text-sm text-[#92a4c9]">Gestiona la información de la gira</div>
+  </div>
+
+  <form method="post" class="space-y-4 bg-[#081225] p-6 rounded-lg border border-[#142033]">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="bg-red-600 text-white p-3 rounded">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div>
+      <label class="block text-sm text-[#92a4c9] mb-1">Artista</label>
+      {{ form.artist }}
+      {% if form.artist.errors %}<p class="text-red-400 text-sm">{{ form.artist.errors }}</p>{% endif %}
+    </div>
+
+    <div>
+      <label class="block text-sm text-[#92a4c9] mb-1">Nombre de la gira</label>
+      {{ form.name }}
+      {% if form.name.errors %}<p class="text-red-400 text-sm">{{ form.name.errors }}</p>{% endif %}
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm text-[#92a4c9] mb-1">Fecha inicio</label>
+        {{ form.start_date }}
+        {% if form.start_date.errors %}<p class="text-red-400 text-sm">{{ form.start_date.errors }}</p>{% endif %}
+      </div>
+      <div>
+        <label class="block text-sm text-[#92a4c9] mb-1">Fecha fin</label>
+        {{ form.end_date }}
+        {% if form.end_date.errors %}<p class="text-red-400 text-sm">{{ form.end_date.errors }}</p>{% endif %}
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm text-[#92a4c9] mb-1">Estado</label>
+      {{ form.status }}
+      {% if form.status.errors %}<p class="text-red-400 text-sm">{{ form.status.errors }}</p>{% endif %}
+    </div>
+
+    <div>
+      <label class="block text-sm text-[#92a4c9] mb-1">Ingresos totales (opcional)</label>
+      {{ form.total_income }}
+      {% if form.total_income.errors %}<p class="text-red-400 text-sm">{{ form.total_income.errors }}</p>{% endif %}
+    </div>
+
+    <div class="pt-4 flex items-center gap-3">
+      <button type="submit" class="px-5 py-2 bg-primary text-white rounded shadow">Guardar</button>
+      <a href="{% url 'tour_list' %}" class="text-[#92a4c9] hover:underline">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

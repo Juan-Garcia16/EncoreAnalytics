@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config
+from decouple import config # para manejar variables de entorno .env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -129,3 +129,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# LOGIN_URL = 'login' # url de login
+# LOGIN_REDIRECT_URL = 'home' # url a la que se redirige tras login exitoso
+# LOGOUT_REDIRECT_URL = 'home' # url a la que se redirige tras logout
+
+# Redirigir al login tras cerrar sesión
+LOGOUT_REDIRECT_URL = 'login'
