@@ -74,6 +74,13 @@
             <span class="material-symbols-outlined">delete</span>
           </button>
         </form>
+      {% else %}
+        {% if concert.status == 'completed' %}
+          <!-- Calificar button for completed concerts (top-right) -->
+          <a href="{% url 'concert_detail' pk=concert.pk %}" class="absolute top-3 right-3 z-20 bg-primary/80 hover:bg-primary text-white px-3 py-2 rounded-md flex items-center gap-1" aria-label="Calificar concierto">
+            <span class="ml-1">Calificar</span>
+          </a>
+        {% endif %}
       {% endif %}
       <div class="p-4 flex flex-col gap-4">
         <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1">
@@ -169,6 +176,7 @@
             </div>
           {% endif %}
         </div>
+        {# Rating moved to concert detail view; list should remain minimal. #}
       </div>
     </div>
     {% empty %}
@@ -275,6 +283,65 @@ document.addEventListener('DOMContentLoaded', function(){
       }).catch(()=>{});
     });
   }, 10000);
+
+  // ----- Attendance (rating) UI -----
+  // user_ratings_json is provided by the view (mapping concert_id -> rating)
+  const userRatings = JSON.parse('{{ user_ratings_json|default:"{}"|escapejs }}');
+
+  // populate attendance select options 1..10
+  document.querySelectorAll('.attendance-select').forEach(function(sel){
+    // avoid repopulating
+    if (sel.dataset.populated) return;
+    for (let i = 1; i <= 10; i++) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = i;
+      sel.appendChild(opt);
+    }
+    sel.dataset.populated = '1';
+    const cid = sel.dataset.concertId;
+    if (cid && userRatings && userRatings[cid] !== undefined && userRatings[cid] !== null) {
+      sel.value = userRatings[cid];
+    }
+  });
+
+  // handle click on rate buttons
+  document.body.addEventListener('click', function(ev){
+    const btn = ev.target.closest && ev.target.closest('.attendance-rate-btn');
+    if (!btn) return;
+    ev.preventDefault();
+    const url = btn.dataset.rateUrl;
+    const concertId = btn.dataset.concertId;
+    const sel = document.querySelector('.attendance-select[data-concert-id="'+concertId+'"]');
+    if (!sel) return;
+    const rating = sel.value;
+    if (!rating) {
+      alert('Selecciona una puntuación entre 1 y 10.');
+      return;
+    }
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrftoken,
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      credentials: 'same-origin',
+      body: 'rating='+encodeURIComponent(rating)
+    }).then(r=>r.json()).then(data=>{
+      if (!data) return;
+      if (data.status === 'ok') {
+        // update avg display
+        const avgEl = document.querySelector('.avg-rating[data-concert-id="'+concertId+'"]');
+        if (avgEl) {
+          avgEl.textContent = Number(data.avg).toFixed(1);
+        }
+      } else if (data.status === 'error') {
+        alert(data.detail || 'Error al enviar la puntuación');
+      }
+    }).catch(err=>{ console.error('rate error', err); alert('Error comunicándose con el servidor.'); });
+  });
 
 });
 </script>

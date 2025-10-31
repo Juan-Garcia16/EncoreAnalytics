@@ -18,4 +18,5 @@ urlpatterns = [
     # AJAX endpoints for toggling interest and getting counts
     path('concert/<int:concert_id>/toggle_interest/', views.toggle_interest, name='toggle_interest'),
     path('concert/<int:concert_id>/interest_count/', views.interest_count, name='interest_count'),
+    path('concert/<int:concert_id>/rate/', views.rate_concert, name='rate_concert'),
 ]

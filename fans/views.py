@@ -180,3 +180,46 @@ def interest_count(request, concert_id):
     concert = get_object_or_404(Concert, pk=concert_id)
     count = Interest.objects.filter(concert=concert).count()
     return JsonResponse({'status': 'ok', 'count': count})
+
+
+@login_required
+def rate_concert(request, concert_id):
+    """AJAX endpoint to rate a completed concert. Expects POST with 'rating' (1-10).
+
+    Returns JSON: {'status':'ok','rating': int, 'avg': float, 'count': int}
+    """
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'detail': 'POST required'}, status=405)
+
+    # ensure fan profile
+    user = request.user
+    try:
+        fan = user.fan
+    except Exception:
+        return JsonResponse({'status': 'error', 'detail': 'Fan profile not found'}, status=400)
+
+    concert = get_object_or_404(Concert, pk=concert_id)
+    # only allow rating for completed concerts
+    if concert.status != 'completed':
+        return JsonResponse({'status': 'error', 'detail': 'Sólo se pueden puntuar conciertos finalizados.'}, status=400)
+
+    rating = request.POST.get('rating')
+    try:
+        rating_int = int(rating)
+        if rating_int < 1 or rating_int > 10:
+            raise ValueError()
+    except Exception:
+        return JsonResponse({'status': 'error', 'detail': 'Valor de puntuación inválido.'}, status=400)
+
+    # create or update Attendance
+    att, created = Attendance.objects.get_or_create(fan=fan, concert=concert)
+    att.rating = rating_int
+    att.save()
+
+    # compute new aggregate
+    from django.db.models import Avg, Count
+    agg = Attendance.objects.filter(concert=concert, rating__isnull=False).aggregate(avg=Avg('rating'), count=Count('pk'))
+    avg = agg['avg'] or 0
+    count = agg['count'] or 0
+
+    return JsonResponse({'status': 'ok', 'rating': rating_int, 'avg': avg, 'count': count})

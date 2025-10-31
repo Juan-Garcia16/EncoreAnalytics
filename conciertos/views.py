@@ -9,7 +9,9 @@ from .forms import ConcertForm, SetlistEntryForm, TourForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
-from django.db.models import Q, Max
+from django.db.models import Q, Max, Avg, Count
+import json
+from django.views.generic import DetailView
 from django.db import IntegrityError
 # ----- TOUR -----
 class TourListView(ListView):
@@ -103,6 +105,8 @@ class ConcertListView(ListView):
         # Filtrar por estado si se pasa en la querystring
         if status:
             qs = qs.filter(status=status)
+        # annotate with average rating and rating count
+        qs = qs.annotate(avg_rating=Avg('attendees__rating'), ratings_count=Count('attendees__rating'))
         return qs
 
     def get_context_data(self, **kwargs):
@@ -124,7 +128,42 @@ class ConcertListView(ListView):
                 # import here to avoid circular-imports at module load
                 from fans.models import Interest
                 user_interested_ids = list(Interest.objects.filter(fan=fan, concert__in=qs).values_list('concert_id', flat=True))
+                # user's existing ratings for displayed concerts
+                from fans.models import Attendance
+                user_attendances = Attendance.objects.filter(fan=fan, concert__in=qs).values_list('concert_id', 'rating')
+                # map concert_id -> rating
+                user_ratings = {c: r for c, r in user_attendances}
+                context['user_ratings'] = user_ratings
+                # also provide JSON for client-side initialization
+                context['user_ratings_json'] = json.dumps(user_ratings)
         context['user_interested_ids'] = user_interested_ids
+        return context
+
+
+class ConcertDetailView(DetailView):
+    model = Concert
+    template_name = 'conciertos/concert_detail.html'
+    context_object_name = 'concert'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        concert = self.get_object()
+        # aggregate ratings
+        agg = concert.attendees.filter(rating__isnull=False).aggregate(avg=Avg('rating'), count=Count('pk'))
+        context['avg_rating'] = agg['avg'] or 0
+        context['ratings_count'] = agg['count'] or 0
+        # user's rating if any
+        user = self.request.user
+        user_rating = None
+        if user.is_authenticated:
+            try:
+                fan = user.fan
+                att = fan.attendances.filter(concert=concert).first()
+                if att:
+                    user_rating = att.rating
+            except Exception:
+                user_rating = None
+        context['user_rating'] = user_rating
         return context
 
 class ConcertCreateView(CreateView):

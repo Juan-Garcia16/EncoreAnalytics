@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}{{ concert.artist.name }} - {{ concert.start_datetime|date:"d/m/Y" }}{% endblock %}
+{% block content %}
+<div class="w-full mx-auto p-8">
+  <div class="bg-[#0b1220] p-6 rounded-lg border border-[#142033] shadow-sm">
+    <div class="md:flex md:items-start md:justify-between gap-6">
+      <div class="md:flex-1">
+        <h1 class="text-white text-2xl font-bold">{{ concert.artist.name }} — {{ concert.venue.name }}</h1>
+        <div class="text-sm text-[#92a4c9] mt-1">{{ concert.start_datetime|date:"d/m/Y - H:i" }}</div>
+        {% if concert.tour %}
+        <div class="text-xs text-[#94a3b8] mt-2">Tour: {{ concert.tour.name }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mt-4 md:mt-0 md:w-56 flex flex-col items-start md:items-end gap-3">
+        {% if concert.status == 'scheduled' %}
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-600 text-white">Programado</span>
+        {% elif concert.status == 'completed' %}
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-600 text-white">Realizado</span>
+        {% elif concert.status == 'canceled' %}
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-600 text-white">Cancelado</span>
+        {% endif %}
+
+        <div class="text-sm text-[#92a4c9]">Fans interesados: {{ concert.interested.count }}</div>
+        <div class="text-sm text-[#92a4c9]">Puntuación media: <span class="avg-rating">{% if avg_rating %}{{ avg_rating|floatformat:1 }}{% else %}-{% endif %}</span></div>
+      </div>
+    </div>
+
+    {% if concert.img %}
+      <div class="mt-6 w-full">
+        <img src="{{ concert.img }}" alt="Imagen del concierto - {{ concert.artist.name }}" class="w-full rounded-md object-cover max-h-96" />
+      </div>
+    {% endif %}
+
+    {% if concert.status == 'completed' %}
+      <div class="mt-6">
+        {% if request.user.is_authenticated and request.user.fan %}
+          <form id="rating-form" method="post" class="flex items-center gap-3">
+            {% csrf_token %}
+            <label class="text-sm text-[#92a4c9]">Tu puntuación</label>
+            <select id="rating-select" name="rating" class="form-input h-10 rounded bg-[#232f48] p-2 pr-8">
+              <option value="">Selecciona</option>
+            </select>
+            <button id="rating-submit" class="px-3 py-2 bg-primary text-white rounded">Enviar</button>
+          </form>
+        {% else %}
+          <div class="mt-2"><a href="{% url 'login' %}" class="text-sm text-[#92a4c9] hover:underline">Inicia sesión para puntuar</a></div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="mt-6">
+      <a href="{% url 'concert_list' %}" class="text-primary hover:underline">Volver a Conciertos</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  // populate select 1..10 and init with user_rating if present
+  const sel = document.getElementById('rating-select');
+  if (sel) {
+    for (let i=1;i<=10;i++){
+      const opt = document.createElement('option'); opt.value = i; opt.textContent = i; sel.appendChild(opt);
+    }
+  const userRating = JSON.parse('{{ user_rating|default:"null"|escapejs }}');
+  if (userRating) sel.value = userRating;
+  }
+
+  const form = document.getElementById('rating-form');
+  if (form) {
+    form.addEventListener('submit', function(ev){
+      ev.preventDefault();
+      const rating = sel.value;
+      if (!rating) { alert('Selecciona una puntuación entre 1 y 10.'); return; }
+      const csrftoken = (function(name){
+        let v = null; if (document.cookie && document.cookie!=''){
+          const parts = document.cookie.split(';'); for(const c of parts){ const t=c.trim(); if (t.startsWith(name+'=')){ v=decodeURIComponent(t.substring(name.length+1)); break; } }
+        } return v;
+      })('csrftoken');
+      fetch('{% url "rate_concert" concert.pk %}',{
+        method:'POST',
+        credentials:'same-origin',
+        headers:{'X-CSRFToken': csrftoken, 'Content-Type':'application/x-www-form-urlencoded','Accept':'application/json'},
+        body: 'rating='+encodeURIComponent(rating)
+      }).then(r=>r.json()).then(data=>{
+        if (data && data.status==='ok'){
+          // update avg display
+          const avgEl = document.querySelector('.avg-rating'); if (avgEl) avgEl.textContent = Number(data.avg).toFixed(1);
+          alert('Puntuación registrada. Gracias!');
+        } else {
+          alert((data && data.detail) || 'Error al puntuar');
+        }
+      }).catch(err=>{ console.error(err); alert('Error en la comunicación'); });
+    });
+  }
+});
+</script>
+{% endblock %}
