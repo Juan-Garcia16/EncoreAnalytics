@@ -43,7 +43,6 @@ class FanCreateView(CreateView):
     template_name = 'fans/fan_form.html'
     success_url = reverse_lazy('fan_list')
     
-    #SE PODRIA AÑADIR LISTA DE CIUDADES PARA EL FORMULARIO
 
 # ----- ATTENDANCE -----
 class AttendanceListView(ListView):
@@ -187,10 +186,9 @@ def interest_count(request, concert_id):
 
 @login_required
 def rate_concert(request, concert_id):
-    """AJAX endpoint to rate a completed concert. Expects POST with 'rating' (1-10).
-
-    Returns JSON: {'status':'ok','rating': int, 'avg': float, 'count': int}
-    """
+    """AJAX endpoint para puntuar un concierto finalizado. Espera POST con 'rating' (1-10).
+    
+     Returns JSON: {'status':'ok','rating': int, 'avg': float, 'count': int}"""
     if request.method != 'POST':
         return JsonResponse({'status': 'error', 'detail': 'POST required'}, status=405)
 

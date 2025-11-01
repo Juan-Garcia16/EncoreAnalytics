@@ -13,7 +13,7 @@ from django.db.models import Q, Max, Avg, Count
 import json
 from django.views.generic import DetailView
 from django.db import IntegrityError
-# ----- TOUR -----
+# ----- GIRA -----
 class TourListView(ListView):
     model = Tour
     template_name = 'conciertos/tour_list.html'
@@ -24,9 +24,9 @@ class TourListView(ListView):
         qs = super().get_queryset()
         q = self.request.GET.get('query', '').strip()
         status = self.request.GET.get('status', '').strip()
-        # Filter by artist name if a query is provided
+        # Filtrar por nombre de artista si se proporciona una query
         if q:
-            # search by artist name OR tour name (case-insensitive contains)
+            # buscar por nombre de artista O nombre de la gira (contiene, insensible a mayúsculas)
             qs = qs.filter(
                 Q(artist__name__icontains=q) | Q(name__icontains=q)
             )
@@ -40,9 +40,9 @@ class TourListView(ListView):
         context['status_choices'] = status_field.choices
         context['selected_status'] = self.request.GET.get('status', '')
         context['selected_query'] = self.request.GET.get('query', '').strip()
-        # compute placeholders so the grid keeps consistent columns on larger viewports
+    # computar marcadores de posición para que la cuadrícula mantenga columnas consistentes en pantallas más grandes
         total = context.get('object_list').count() if context.get('object_list') is not None else 0
-        # number of columns on large screens is 3; compute how many empty slots to add
+    # número de columnas en pantallas grandes es 3; computar cuántos espacios vacíos agregar
         remainder = total % 3
         placeholder_count = (3 - remainder) % 3
         context['placeholders'] = list(range(placeholder_count))
@@ -83,7 +83,7 @@ def tour_delete(request, pk):
     tour.delete()
     return redirect('tour_list')
 
-# ----- CONCERT -----
+# ----- CONCIERTO -----
 class ConcertListView(ListView):
     model = Concert
     template_name = 'conciertos/concert_list.html'
@@ -105,7 +105,7 @@ class ConcertListView(ListView):
         # Filtrar por estado si se pasa en la querystring
         if status:
             qs = qs.filter(status=status)
-        # annotate with average rating and rating count
+    # anotar con la calificación promedio y el recuento de calificaciones
         qs = qs.annotate(avg_rating=Avg('attendees__rating'), ratings_count=Count('attendees__rating'))
         return qs
 
@@ -125,16 +125,16 @@ class ConcertListView(ListView):
                 fan = None
             if fan:
                 qs = context.get('concerts') or self.get_queryset()
-                # import here to avoid circular-imports at module load
+                # importar aquí para evitar importaciones circulares en la carga del módulo
                 from fans.models import Interest
                 user_interested_ids = list(Interest.objects.filter(fan=fan, concert__in=qs).values_list('concert_id', flat=True))
-                # user's existing ratings for displayed concerts
+                # calificaciones existentes del usuario para los conciertos mostrados
                 from fans.models import Attendance
                 user_attendances = Attendance.objects.filter(fan=fan, concert__in=qs).values_list('concert_id', 'rating')
-                # map concert_id -> rating
+                # mapear concert_id -> rating
                 user_ratings = {c: r for c, r in user_attendances}
                 context['user_ratings'] = user_ratings
-                # also provide JSON for client-side initialization
+                # también proporcionar JSON para la inicialización del lado del cliente
                 context['user_ratings_json'] = json.dumps(user_ratings)
         context['user_interested_ids'] = user_interested_ids
         return context
@@ -183,7 +183,7 @@ def concert_delete(request, pk):
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
     concert = get_object_or_404(Concert, pk=pk)
-    # Optional: restrict deletion to staff users
+    # opcional: restringir eliminación a usuarios staff
     if not request.user.is_authenticated or not request.user.is_staff:
         return redirect('concert_list')
     concert.delete()
@@ -216,7 +216,7 @@ class SetlistEntryCreateView(CreateView):
 
 
 def concert_setlist(request, pk):
-    """View to display the setlist entries for a single concert."""
+    """Vista para mostrar las entradas del setlist de un solo concierto."""
     concert = get_object_or_404(Concert, pk=pk)
     entries = SetlistEntry.objects.filter(concert=concert).order_by('position')
     return render(request, 'conciertos/setlistentry_list.html', {'setlist_entries': entries, 'concert': concert})
@@ -224,9 +224,9 @@ def concert_setlist(request, pk):
 
 @staff_member_required
 def setlist_entry_add(request, concert_pk):
-    """Staff-only view to add a SetlistEntry to a concert."""
+    """Vista solo para personal autorizado que permite agregar una entrada al setlist de un concierto."""
     concert = get_object_or_404(Concert, pk=concert_pk)
-    # compute suggested next position (max position + 1)
+    # si no hay entradas, sugerir posición 1
     max_pos = SetlistEntry.objects.filter(concert=concert).aggregate(Max('position'))['position__max'] or 0
     suggested_position = max_pos + 1
     if request.method == 'POST':
@@ -237,11 +237,11 @@ def setlist_entry_add(request, concert_pk):
             try:
                 entry.save()
             except IntegrityError as err:
-                # Determine whether the conflict is due to duplicate song or duplicate position
-                # by checking existing rows in the DB rather than parsing DB-specific messages.
+                # Determinar si el conflicto se debe a canción duplicada o posición duplicada
+                # comprobando filas existentes en la base de datos en lugar de analizar mensajes específicos del motor.
                 conflict_song_qs = SetlistEntry.objects.filter(concert=concert, song=entry.song)
                 conflict_pos_qs = SetlistEntry.objects.filter(concert=concert, position=entry.position)
-                # exclude self (not needed for add but harmless)
+                # excluirse a sí mismo (no necesario al añadir pero inofensivo)
                 if entry.pk:
                     conflict_song_qs = conflict_song_qs.exclude(pk=entry.pk)
                     conflict_pos_qs = conflict_pos_qs.exclude(pk=entry.pk)
@@ -251,7 +251,7 @@ def setlist_entry_add(request, concert_pk):
                 elif conflict_pos_qs.exists():
                     form.add_error('position', 'Ya existe una canción en esa posición para este concierto.')
                 else:
-                    # Fallback generic error
+                    # Error genérico por defecto
                     form.add_error(None, 'Error al guardar la entrada del setlist.')
                 artists = Artist.objects.order_by('name')
                 return render(request, 'conciertos/setlistentry_form.html', {'form': form, 'concert': concert, 'artists': artists, 'suggested_position': suggested_position})
@@ -264,7 +264,7 @@ def setlist_entry_add(request, concert_pk):
 
 @staff_member_required
 def setlist_entry_edit(request, pk):
-    """Staff-only view to edit an existing SetlistEntry."""
+    """Vista solo para personal autorizado para editar una entrada de setlist existente."""
     entry = get_object_or_404(SetlistEntry, pk=pk)
     concert = entry.concert
     if request.method == 'POST':
@@ -273,7 +273,7 @@ def setlist_entry_edit(request, pk):
             try:
                 form.save()
             except IntegrityError as err:
-                # determine conflict type by checking existing rows
+                # determinar el tipo de conflicto comprobando filas existentes
                 inst = form.instance
                 conflict_song_qs = SetlistEntry.objects.filter(concert=concert, song=inst.song).exclude(pk=inst.pk)
                 conflict_pos_qs = SetlistEntry.objects.filter(concert=concert, position=inst.position).exclude(pk=inst.pk)
@@ -284,7 +284,7 @@ def setlist_entry_edit(request, pk):
                 else:
                     form.add_error(None, 'Error al guardar la entrada del setlist.')
                 artists = Artist.objects.order_by('name')
-                # compute suggested next position for display (useful when editing)
+                # sugeririr la siguiente posición disponible
                 max_pos = SetlistEntry.objects.filter(concert=concert).aggregate(Max('position'))['position__max'] or 0
                 suggested_position = max_pos + 1
                 return render(request, 'conciertos/setlistentry_form.html', {'form': form, 'concert': concert, 'entry': entry, 'artists': artists, 'suggested_position': suggested_position})
@@ -292,7 +292,6 @@ def setlist_entry_edit(request, pk):
     else:
         form = SetlistEntryForm(instance=entry, concert=concert)
     artists = Artist.objects.order_by('name')
-    # compute suggested position for display when editing
     max_pos = SetlistEntry.objects.filter(concert=concert).aggregate(Max('position'))['position__max'] or 0
     suggested_position = max_pos + 1
     return render(request, 'conciertos/setlistentry_form.html', {'form': form, 'concert': concert, 'entry': entry, 'artists': artists, 'suggested_position': suggested_position})
@@ -301,7 +300,7 @@ def setlist_entry_edit(request, pk):
 @staff_member_required
 @require_http_methods(['POST'])
 def setlist_entry_delete(request, pk):
-    """Staff-only deletion of a setlist entry (POST only)."""
+    """Eliminación (solo staff) de una entrada del setlist. Acepta solo POST."""
     entry = get_object_or_404(SetlistEntry, pk=pk)
     concert_pk = entry.concert.pk
     entry.delete()
@@ -311,10 +310,10 @@ def setlist_entry_delete(request, pk):
 @staff_member_required
 @require_http_methods(['POST'])
 def song_create_ajax(request):
-    """AJAX endpoint to create a Song from the setlist form.
+    """Endpoint AJAX para crear una Song desde el formulario de setlist.
 
-    Expects POST with 'title' (required), optional 'original_artist' and 'release_year'.
-    Returns JSON with the created song id and title.
+    Espera POST con 'title' (requerido), opcional 'original_artist' y 'release_year'.
+    Devuelve JSON con el id y título de la canción creada.
     """
     title = request.POST.get('title', '').strip()
     original_artist = request.POST.get('original_artist', '').strip()
@@ -324,7 +323,7 @@ def song_create_ajax(request):
     if not title:
         errors['title'] = 'El título es obligatorio.'
 
-    # Validate release_year if provided
+    # Validar release_year si se proporciona
     if release_year:
         try:
             release_year_int = int(release_year)
@@ -338,8 +337,8 @@ def song_create_ajax(request):
     if errors:
         return JsonResponse({'success': False, 'errors': errors}, status=400)
 
-    # Try to resolve original_artist to an Artist instance by exact name; if not found,
-    # store the provided name in `original_artist_name` (we don't create new Artist rows).
+    # Intentar resolver original_artist a una instancia de Artist por nombre exacto; si no se encuentra,
+    # almacenar el nombre proporcionado en `original_artist_name` (no creamos nuevas filas en Artist).
     artist_obj = None
     artist_name_to_store = None
     if original_artist:

@@ -61,11 +61,11 @@ class ArtistUpdateView(UpdateView):
 
 
 def artist_delete(request, pk):
-    """Delete an artist. Accepts POST only and redirects to artist list."""
+    """Borrar un artista. Acepta solo POST y redirige a la lista de artistas."""
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
     artist = get_object_or_404(Artist, pk=pk)
-    # Optional: restrict deletion to staff users
+    # Opcional: restringir eliminación a usuarios staff
     if not request.user.is_authenticated or not request.user.is_staff:
         return redirect('artist_list')
     artist.delete()

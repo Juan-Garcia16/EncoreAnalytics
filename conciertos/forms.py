@@ -29,7 +29,7 @@ class TourForm(forms.ModelForm):
             'class': 'form-input h-14 w-full rounded-lg bg-[#232f48] p-4 text-white'
         })
     )
-
+    
     class Meta:
         model = Tour
         fields = ['artist', 'name', 'start_date', 'end_date', 'status', 'total_income']
@@ -39,13 +39,14 @@ class TourForm(forms.ModelForm):
             'total_income': forms.NumberInput(attrs={'class': 'form-input h-14 w-full rounded-lg bg-[#232f48] p-4 text-white'}),
         }
 
-    # enforce non-negative incomes at the form level as well
+    # asegurarse de que los ingresos no sean negativos a nivel de formulario
     total_income = forms.DecimalField(
         required=False,
         min_value=0,
         widget=forms.NumberInput(attrs={'class': 'form-input h-14 w-full rounded-lg bg-[#232f48] p-4 text-white'})
     )
 
+    # Validar coherencia entre fechas y estado de la gira
     def clean(self):
         cleaned = super().clean()
         start = cleaned.get('start_date')
@@ -53,31 +54,31 @@ class TourForm(forms.ModelForm):
         status = cleaned.get('status')
         today = timezone.now().date()
 
-        # If both dates provided, ensure end >= start
+        # Si se proporcionan ambas fechas, asegúrese de que end >= start
         if start and end:
             if end < start:
                 self.add_error('end_date', forms.ValidationError('La fecha de finalización no puede ser anterior a la fecha de inicio.'))
 
-            # Now check coherence of status with the date interval
+            #ahora comprobar la coherencia del estado con el intervalo de fechas
             if end < today:
-                # entire tour elapsed
+                # gira terminada en el pasado
                 if status != 'finished':
                     self.add_error('status', forms.ValidationError('La gira finalizó en el pasado, el estado debería ser "Finalizada".'))
             elif start > today:
-                # tour entirely in future
+                # gira completamente en el futuro
                 if status != 'planned':
                     self.add_error('status', forms.ValidationError('La gira comienza en el futuro, el estado debería ser "Planificada".'))
             else:
-                # today is within [start, end]
+                # gira en curso
                 if status != 'ongoing':
                     self.add_error('status', forms.ValidationError('La gira está en curso según las fechas, el estado debería ser "En curso".'))
 
-        # If only start provided, check plausible statuses
+        #si solo se proporciona la fecha inicio, comprobar estados plausibles
         elif start and not end:
             if start > today and status and status != 'planned':
                 self.add_error('status', forms.ValidationError('La gira comienza en el futuro; use el estado "Planificada".'))
 
-        # If only end provided, check plausible statuses
+        # Si solo se proporciona la fecha de finalización, comprobar estados plausibles
         elif end and not start:
             if end < today and status and status != 'finished':
                 self.add_error('status', forms.ValidationError('La fecha de finalización es pasada; el estado debería ser "Finalizada".'))
@@ -149,25 +150,26 @@ class ConcertForm(forms.ModelForm):
     class Meta:
         model = Concert
         fields = ['artist', 'venue', 'tour', 'start_datetime', 'status', 'total_income', 'img']
-
+        
+    # Validar coherencia entre estado y total_income
     def clean(self):
         cleaned = super().clean()
         status = cleaned.get('status')
         total_income = cleaned.get('total_income')
         start_dt = cleaned.get('start_datetime')
 
-        # Only allow total_income when concert status is 'completed'
+        # solo permitir total_income cuando el estado del concierto es 'realizado'
         if total_income not in (None, '') and status != 'completed':
-            # attach error to the total_income field
+            # así el error aparece junto al campo en el formulario
             self.add_error('total_income', forms.ValidationError(
                 'Solo puede registrar ingresos si el concierto está marcado como "Realizado".'
             ))
 
-        # If the concert is marked as completed, ensure the start_datetime is not in the future.
-        # i.e. you should not mark a concert as 'Realizado' if its date is after now.
+        # si el concierto está marcado como realizado, asegúrese de que start_datetime no esté en el futuro.
+        # i.e. no se debe marcar un concierto como 'Realizado' si su fecha es posterior a ahora.
         if status == 'completed' and start_dt:
             now = timezone.now()
-            # allow a small tolerance (e.g., seconds) but generally ensure start_dt <= now
+            # permitir una pequeña tolerancia (por ejemplo, segundos) pero en general asegurarse de que start_dt <= now
             if start_dt > now:
                 self.add_error('status', forms.ValidationError(
                     'No se puede marcar como "Realizado" un concierto cuya fecha es futura.'
@@ -178,10 +180,10 @@ class ConcertForm(forms.ModelForm):
 
 class SetlistEntryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        # Accept a `concert` kwarg to validate uniqueness of `position` within that concert
+        # aceptar un kwarg `concert` para validar la unicidad de `position` dentro de ese concierto
         self._concert = kwargs.pop('concert', None)
         super().__init__(*args, **kwargs)
-        # If the form was instantiated with an instance, ensure we have the concert
+        # si el formulario se instanció con una instancia, asegurarse de tener el concierto
         if not self._concert and hasattr(self, 'instance') and getattr(self.instance, 'concert', None):
             self._concert = self.instance.concert
 
@@ -195,6 +197,7 @@ class SetlistEntryForm(forms.ModelForm):
             'is_cover': forms.CheckboxInput(attrs={'class': 'ml-2'}),
         }
 
+        # Validar unicidad de `position` dentro del concierto
         def clean_position(self):
             pos = self.cleaned_data.get('position')
             if pos is None:
@@ -202,9 +205,10 @@ class SetlistEntryForm(forms.ModelForm):
 
             concert = self._concert
             if not concert:
-                # If we don't know the concert yet, skip uniqueness check (view should pass concert)
+                # si no conocemos el concierto aún, omitir la verificación de unicidad (la vista debería pasar el concierto)
                 return pos
 
+            # Validar unicidad de `song` dentro del concierto
             def clean_song(self):
                 song = self.cleaned_data.get('song')
                 if not song:
@@ -212,9 +216,10 @@ class SetlistEntryForm(forms.ModelForm):
 
                 concert = self._concert
                 if not concert:
-                    # If we don't know the concert yet, skip uniqueness check
+                    # Si no conocemos el concierto aún, omitir la verificación de unicidad (la vista debería pasar el concierto)
                     return song
 
+                # Verificar si la canción ya está en el setlist para este concierto
                 qs = SetlistEntry.objects.filter(concert=concert, song=song)
                 if self.instance and self.instance.pk:
                     qs = qs.exclude(pk=self.instance.pk)
@@ -223,7 +228,7 @@ class SetlistEntryForm(forms.ModelForm):
                 return song
 
             qs = SetlistEntry.objects.filter(concert=concert, position=pos)
-            # exclude self when editing
+            # excluir self al editar
             if self.instance and self.instance.pk:
                 qs = qs.exclude(pk=self.instance.pk)
             if qs.exists():

@@ -30,8 +30,8 @@ class Concert(models.Model):
     
 class Song(models.Model):
     title = models.CharField(max_length=300)
-    # Keep FK to Artist when the original artist exists in DB; otherwise store free-text name in
-    # `original_artist_name`. This lets users enter arbitrary artist names without creating Artist rows.
+    # sigue la FK a Artist cuando el artista original existe en la BD; de lo contrario, almacenar el nombre como texto libre en
+    # `original_artist_name`. Esto permite a los usuarios ingresar nombres de artistas arbitrarios sin crear filas de Artista.
     original_artist = models.ForeignKey(Artist, on_delete=models.SET_NULL, null=True, blank=True)
     original_artist_name = models.CharField(max_length=200, null=True, blank=True)
     release_year = models.PositiveSmallIntegerField(null=True, blank=True)
