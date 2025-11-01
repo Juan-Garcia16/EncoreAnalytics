@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # concerts
     path('', views.ConcertListView.as_view(), name='concert_list'),
     path('add/', views.ConcertCreateView.as_view(), name='concert_add'),
     path('<int:pk>/edit/', views.ConcertUpdateView.as_view(), name='concert_edit'),
@@ -14,6 +15,7 @@ urlpatterns = [
     path('tours/<int:pk>/', views.TourDetailView.as_view(), name='tour_detail'),
     path('tours/<int:pk>/edit/', views.TourUpdateView.as_view(), name='tour_edit'),
     path('tours/<int:pk>/delete/', views.tour_delete, name='tour_delete'),
+    # setlist
     path('<int:concert_pk>/setlist/add/', views.setlist_entry_add, name='setlistentry_add'),
     path('setlist/song/add/', views.song_create_ajax, name='song_create_ajax'),
     path('setlist/<int:pk>/edit/', views.setlist_entry_edit, name='setlistentry_edit'),

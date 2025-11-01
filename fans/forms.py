@@ -56,8 +56,8 @@ class FanProfileForm(forms.ModelForm):
         })
     )
 
-    # Reemplazamos el campo de texto por un ModelChoiceField en la inicialización
-    # para aprovechar la relación FK a City y evitar errores de tipo.
+    # Reemplazar el campo de texto por un ModelChoiceField en la inicialización
+    # para aprovechar la relación FK a City y evitar errores.
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # si hay ciudades en la base, mostrar como select; si no, fall back a text input
@@ -91,5 +91,5 @@ class FanProfileForm(forms.ModelForm):
     
     class Meta:
         model = Fan
-        # No incluir 'email' aquí: lo gestionamos en el User (UserRegisterForm).
+        # No incluir 'email' aquí: lo gestiona en el User (UserRegisterForm).
         fields = ("full_name", "city", "birthdate")
